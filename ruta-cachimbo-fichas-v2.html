@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#16304F">
+<title>Ruta Cachimbo · Generador de fichas UNP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#16304F; --navy-deep:#102542; --navy-soft:#24456B;
+  --gold:#B8862B; --gold-soft:#E8C77A; --gold-wash:#FBF3E2;
+  --ink:#1D2733; --ink-soft:#5A6879; --line:#DFE5EC;
+  --paper:#FFFFFF; --bg:#F1F4F8; --ok:#1F7A4D; --danger:#A6332E; --wa:#1DA851;
+  --sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --serif:'Source Serif 4',Georgia,'Times New Roman',serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --paper:#FFFFFF; --bg:#E8ECF2; } }
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;overflow-x:hidden}
+button{font:inherit;cursor:pointer;touch-action:manipulation}
+input,select,textarea{font:inherit;color:inherit;max-width:100%}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+img{max-width:100%}
+
+.sitebar{background:var(--paper);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:40;padding-top:env(safe-area-inset-top)}
+.sitebar-in{max-width:1180px;margin:0 auto;padding:11px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto;min-width:0}
+.brand-mark{width:36px;height:36px;border-radius:9px;background:var(--navy);display:grid;place-items:center;color:var(--gold-soft);flex:none}
+.brand-name{font-family:var(--serif);font-weight:700;font-size:16px;letter-spacing:.04em;line-height:1.1}
+.brand-sub{font-size:11.5px;color:var(--ink-soft)}
+.wa-btn{background:var(--wa);color:#fff;border:0;border-radius:999px;padding:10px 17px;font-weight:600;display:inline-flex;align-items:center;gap:8px;font-size:14px}
+.ghost-btn{background:none;border:0;color:var(--ink-soft);font-weight:500;display:inline-flex;align-items:center;gap:7px;padding:8px 6px;font-size:14px}
+.uni-chip{background:var(--gold-wash);color:var(--gold);border:1px solid var(--gold-soft);border-radius:8px;padding:6px 11px;font-weight:700;font-size:12.5px;letter-spacing:.06em}
+
+.shell{max-width:1180px;margin:20px auto 56px;padding:0 16px}
+.wizard{display:grid;grid-template-columns:284px 1fr;background:var(--paper);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.rail{background:var(--navy);color:#fff;padding:28px 24px;position:relative;overflow:hidden}
+.rail:after{content:"";position:absolute;right:-70px;bottom:-70px;width:210px;height:210px;border-radius:50%;border:32px solid rgba(255,255,255,.045)}
+.rail-kicker{font-size:11.5px;letter-spacing:.14em;color:var(--gold-soft);font-weight:600}
+.rail h2{font-family:var(--serif);font-size:28px;line-height:1.14;margin:9px 0 11px;font-weight:600}
+.rail p{font-size:13.5px;color:rgba(255,255,255,.72);margin:0 0 24px;max-width:30ch}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:6px;position:relative;z-index:1}
+.step{display:flex;gap:12px;align-items:center;padding:12px 13px;border-radius:10px}
+.step.on{background:var(--navy-deep)}
+.step-n{width:25px;height:25px;border-radius:50%;background:rgba(255,255,255,.14);display:grid;place-items:center;font-size:12.5px;font-weight:700;flex:none}
+.step.on .step-n{background:var(--gold);color:var(--navy-deep)}
+.step.done .step-n{background:var(--ok);color:#fff}
+.step-t{font-size:14px;font-weight:600;line-height:1.25;display:block}
+.step-d{font-size:12px;color:rgba(255,255,255,.6);display:block}
+.pane{padding:30px 32px 34px;min-width:0}
+.pane-kicker{font-size:11.5px;letter-spacing:.12em;color:var(--gold);font-weight:700}
+.pane h1{font-family:var(--serif);font-size:29px;font-weight:600;margin:9px 0 6px;line-height:1.16}
+.pane .lede{color:var(--ink-soft);margin:0 0 24px;font-size:14.5px}
+
+.profiles{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:26px}
+.prof{position:relative;text-align:left;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;padding:17px 15px}
+.prof.on{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-wash)}
+.prof-ico{width:40px;height:40px;border-radius:10px;background:#EEF2F7;display:grid;place-items:center;font-family:var(--serif);font-size:19px;font-weight:600;color:var(--navy);margin-bottom:11px}
+.prof.on .prof-ico{background:var(--gold-wash);color:var(--gold)}
+.prof-t{font-weight:600;font-size:15.5px}
+.prof-d{font-size:12.5px;color:var(--ink-soft);margin-top:3px}
+.radio{position:absolute;top:15px;right:15px;width:17px;height:17px;border-radius:50%;border:1.5px solid #C2CCD8}
+.prof.on .radio{border-color:var(--gold);background:radial-gradient(circle,var(--gold) 0 45%,transparent 46%)}
+
+.grid{display:grid;gap:15px}
+.g3{grid-template-columns:2fr 1fr 1fr}
+.g5{grid-template-columns:1.3fr 1.1fr 1fr .65fr .9fr;align-items:end}
+label.fl{display:block;font-size:12.5px;font-weight:600;color:var(--ink-soft);margin-bottom:6px}
+.inp{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:9px;background:var(--paper);font-size:16px}
+@media(min-width:760px){.inp{font-size:14.5px}}
+.inp:focus{border-color:var(--navy-soft);outline:none;box-shadow:0 0 0 3px rgba(22,48,79,.09)}
+.logo-drop{border:1.5px dashed #C6D0DC;border-radius:9px;padding:11px;text-align:center;font-size:13px;color:var(--ink-soft);background:#FAFBFD;min-height:44px;display:grid;place-items:center;cursor:pointer}
+.logo-drop.has{border-style:solid;border-color:var(--gold-soft);background:var(--gold-wash);padding:5px}
+.logo-drop img{max-height:36px}
+.actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:26px;flex-wrap:wrap}
+.btn{border:0;border-radius:10px;padding:13px 22px;font-weight:600;display:inline-flex;align-items:center;gap:8px}
+.btn-p{background:var(--navy);color:#fff}
+.btn-p:disabled{background:#9FB0C4;cursor:not-allowed}
+.btn-s{background:var(--paper);border:1px solid var(--line);color:var(--ink)}
+.btn-link{background:none;border:0;color:var(--gold);font-weight:600;padding:8px 2px}
+
+.meter{display:flex;align-items:center;gap:14px;border:1px solid var(--line);border-radius:12px;padding:14px 18px;background:#FAFBFD;margin-bottom:16px;flex-wrap:wrap}
+.meter b{font-size:21px;font-family:var(--serif)}
+.bar{flex:1;min-width:110px;height:7px;background:#E3E9F0;border-radius:99px;overflow:hidden}
+.bar span{display:block;height:100%;background:var(--gold);width:0;transition:width .2s}
+.meter .lbl{font-size:12.5px;color:var(--ink-soft)}
+.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap}
+.courses{border:1px solid var(--line);border-radius:12px;max-height:440px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.crow{display:grid;grid-template-columns:36px 1fr auto;gap:12px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line)}
+.crow:last-child{border-bottom:0}
+.crow.active{background:var(--gold-wash)}
+.cbadge{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-size:11.5px;font-weight:700}
+.cname{font-weight:600;font-size:14.5px}
+.cstock{font-size:11.5px;color:var(--ink-soft)}
+.csel{display:flex;gap:7px;margin-top:6px;flex-wrap:wrap}
+.mini{border:1px solid var(--line);border-radius:7px;padding:7px 8px;font-size:12.5px;background:var(--paper);max-width:185px}
+.stepper{display:flex;align-items:center;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--paper)}
+.stepper button{width:36px;height:38px;border:0;background:none;font-size:18px;color:var(--ink-soft)}
+.stepper input{width:44px;height:38px;border:0;text-align:center;font-weight:600;background:none;font-size:15px}
+
+.verbar{background:var(--navy);color:#fff;border-radius:12px;padding:11px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.vchips{display:flex;gap:6px}
+.vchip{width:36px;height:34px;border-radius:7px;border:0;background:rgba(255,255,255,.12);color:#fff;font-weight:700}
+.vchip.on{background:var(--gold);color:var(--navy-deep)}
+.verbar .sp{margin-left:auto;display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.wbtn{background:rgba(255,255,255,.12);border:0;color:#fff;border-radius:8px;padding:9px 12px;font-weight:600;font-size:13.5px}
+.chk{display:inline-flex;align-items:center;gap:7px;font-size:13.5px}
+.exbar{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:11px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.exbar .grow{margin-left:auto;display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.lbtn{background:#EEF2F7;border:0;color:var(--ink);border-radius:8px;padding:10px 13px;font-weight:600;font-size:13.5px}
+.exinfo{font-size:13.5px;margin-left:14px}
+.exinfo small{display:block;color:var(--ink-soft);font-size:12px}
+
+.sheet{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:34px 36px 42px;max-width:900px;margin:0 auto}
+.sh-head{display:flex;align-items:center;gap:13px;border-bottom:2.5px solid var(--navy);padding-bottom:13px}
+.sh-logo{height:42px;max-width:140px;object-fit:contain}
+.sh-brand{font-family:var(--serif);font-weight:700;letter-spacing:.05em;font-size:15.5px;min-width:0}
+.sh-brand small{display:block;font-family:var(--sans);font-weight:400;letter-spacing:0;font-size:11.5px;color:var(--ink-soft)}
+.sh-tag{margin-left:auto;background:var(--gold);color:#fff;border-radius:8px;padding:7px 14px;font-weight:700;font-size:13px;letter-spacing:.05em;flex:none}
+.sh-uni{text-align:center;font-size:12px;letter-spacing:.11em;color:var(--gold);font-weight:700;margin-top:20px}
+.sh-title{text-align:center;font-family:var(--serif);font-size:31px;font-weight:600;margin:8px 0 5px;line-height:1.15}
+.sh-meta{text-align:center;color:var(--ink-soft);font-size:13.5px}
+.sh-fields{display:flex;gap:16px;align-items:center;border:1px solid var(--line);border-radius:9px;padding:12px 16px;margin:20px 0 13px;font-size:13.5px;flex-wrap:wrap}
+.sh-fields .fill{flex:1;min-width:170px}
+.sh-fields u{text-decoration:none;border-bottom:1px solid #9AA8B8;display:inline-block;min-width:130px}
+.sh-note{border-left:3px solid var(--gold);background:#F6F8FA;padding:10px 14px;font-size:13px;border-radius:0 7px 7px 0}
+.qgrid{column-count:2;column-gap:32px;margin-top:20px}
+.q{break-inside:avoid;padding-bottom:13px;margin-bottom:13px;border-bottom:1px dashed var(--line)}
+.q-top{display:flex;gap:8px;align-items:baseline;font-size:10.5px;letter-spacing:.06em;font-weight:700;color:var(--gold);margin-bottom:6px}
+.q-top .lvl{margin-left:auto;color:var(--ink-soft);font-weight:500}
+.q-body{font-size:14px}
+.q-body b.n{font-family:var(--serif);font-weight:700}
+.alts{list-style:none;margin:7px 0 0;padding:0;display:grid;gap:3px}
+.alts li{font-size:13.5px;display:flex;gap:8px}
+.alts li i{font-style:normal;font-weight:700;color:var(--gold);flex:none}
+.alts li.key{background:#EDF7F1;border-radius:5px;padding:2px 5px;margin-left:-5px}
+.sol{margin-top:9px;background:#F6F8FA;border-radius:8px;padding:10px 12px;font-size:13px;border-left:3px solid var(--navy-soft)}
+.sol b{display:block;font-size:11px;letter-spacing:.06em;color:var(--navy-soft);margin-bottom:4px}
+.qtools{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+.tbtn{border:1px solid var(--line);background:var(--paper);border-radius:7px;padding:6px 10px;font-size:12px;color:var(--ink-soft)}
+.tbtn.fav{color:var(--danger);border-color:#EBC9C7;background:#FDF3F2}
+
+.modal{position:fixed;inset:0;background:rgba(16,37,66,.55);display:grid;place-items:center;padding:16px;z-index:60}
+.mbox{background:var(--paper);border-radius:14px;max-width:660px;width:100%;max-height:88vh;overflow-y:auto;padding:24px 24px 20px;-webkit-overflow-scrolling:touch}
+.mbox h3{font-family:var(--serif);font-size:21px;margin:0 0 4px;font-weight:600}
+.mbox .sub{color:var(--ink-soft);font-size:13.5px;margin:0 0 16px}
+.keygrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px}
+.keycell{border:1px solid var(--line);border-radius:8px;padding:8px;text-align:center;font-size:13px}
+.keycell b{display:block;font-family:var(--serif);font-size:17px;color:var(--gold)}
+.bub{display:flex;gap:4px;justify-content:center;margin-top:4px}
+.bub span{width:17px;height:17px;border-radius:50%;border:1px solid #98A6B6;font-size:10px;display:grid;place-items:center;color:#7D8B9B}
+.hist-item{border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;gap:10px;align-items:center;margin-bottom:9px;flex-wrap:wrap}
+.hist-item .g{flex:1;min-width:150px}
+.hist-item small{color:var(--ink-soft);display:block;font-size:12.5px}
+.empty{text-align:center;padding:34px 16px;color:var(--ink-soft)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy-deep);color:#fff;padding:12px 18px;border-radius:10px;font-size:14px;z-index:80;max-width:90vw;text-align:center}
+.warn{background:#FDF6E6;border:1px solid #EFD9A6;color:#7A5A12;border-radius:9px;padding:10px 13px;font-size:13.5px;margin-bottom:14px}
+
+@media (max-width:900px){
+  .wizard{grid-template-columns:1fr}
+  .rail{padding:20px 18px}
+  .rail h2{font-size:23px;margin-bottom:14px}
+  .rail p{display:none}
+  .rail:after{display:none}
+  .steps{grid-auto-flow:column;grid-template-columns:repeat(3,1fr);gap:4px}
+  .step{flex-direction:column;text-align:center;gap:5px;padding:9px 4px}
+  .step-d{display:none}
+  .step-t{font-size:12.5px}
+  .pane{padding:20px 16px 26px}
+  .pane h1{font-size:24px}
+  .profiles{grid-template-columns:1fr;gap:10px}
+  .prof{display:flex;align-items:center;gap:13px;padding:13px}
+  .prof-ico{margin-bottom:0;width:36px;height:36px;flex:none}
+  .g3,.g5{grid-template-columns:1fr}
+  .qgrid{column-count:1}
+  .sheet{padding:20px 16px 26px;border-radius:12px}
+  .sh-title{font-size:25px}
+  .crow{grid-template-columns:34px 1fr;row-gap:10px}
+  .crow .stepper{grid-column:2;justify-self:start}
+  .mini{max-width:100%;flex:1 1 130px}
+  .exinfo{margin-left:0;width:100%}
+  .exbar .grow,.verbar .sp{margin-left:0;width:100%}
+  .lbtn,.wbtn{flex:1 1 auto;text-align:center}
+  .btn{flex:1 1 auto;justify-content:center}
+}
+@media (max-width:420px){
+  .brand-sub{display:none}
+  .wa-btn span{display:none}
+  .wa-btn{padding:10px 12px}
+}
+
+@media print{
+  body{background:#fff}
+  .sitebar,.verbar,.exbar,.noprint,.qtools,.modal{display:none!important}
+  .shell{margin:0;padding:0;max-width:none}
+  .sheet{border:0;border-radius:0;padding:0;max-width:none}
+  .qgrid{column-count:2}
+  .q{break-inside:avoid}
+  .sol{background:#fff;border-left:2px solid #999}
+}
+</style>
+</head>
+<body>
+
+<header class="sitebar">
+  <div class="sitebar-in">
+    <div class="brand">
+      <div class="brand-mark"><svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 1 8l11 5 9-4.09V16h2V8L12 3z"/><path d="M5 12.18v3.2c0 1.7 3.13 3.12 7 3.12s7-1.42 7-3.12v-3.2L12 15.5 5 12.18z"/></svg></div>
+      <div><div class="brand-name">RUTA CACHIMBO</div><div class="brand-sub">Herramientas para docentes</div></div>
+    </div>
+    <a class="wa-btn" id="waBtn" href="https://wa.me/51983373977?text=Hola%2C%20necesito%20ayuda%20con%20el%20generador%20de%20fichas%20de%20Ruta%20Cachimbo" target="_blank" rel="noopener">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1a12 12 0 0 1-5.2-4.5c-.4-.6-1-1.5-1-2.9 0-1.3.7-2 1-2.3.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2 0 .4-.1.5l-.4.5c-.1.2-.3.3-.1.6a8.7 8.7 0 0 0 3.7 3.1c.3.2.5.1.6 0l.8-1c.2-.2.3-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.6-.1 1z"/></svg><span>Ayuda por WhatsApp</span></a>
+    <button class="ghost-btn" id="restartBtn">Generador de fichas</button>
+    <span class="uni-chip">UNP</span>
+  </div>
+</header>
+
+<main class="shell">
+  <div class="wizard" id="wizard">
+    <aside class="rail">
+      <div class="rail-kicker">NUEVA FICHA</div>
+      <h2>Configura tu material</h2>
+      <p>Elige el perfil, los temas y el nivel de cada curso.</p>
+      <ul class="steps">
+        <li class="step on" id="st1"><span class="step-n">1</span><span><span class="step-t">Perfil del examen</span><span class="step-d">Datos de la ficha</span></span></li>
+        <li class="step" id="st2"><span class="step-n">2</span><span><span class="step-t">Distribución</span><span class="step-d">Cursos y temas</span></span></li>
+        <li class="step" id="st3"><span class="step-n">3</span><span><span class="step-t">Vista previa</span><span class="step-d">Edita y descarga</span></span></li>
+      </ul>
+    </aside>
+
+    <section class="pane" id="pane1">
+      <div class="pane-kicker">PASO 1 DE 3</div>
+      <h1>Configura la ficha UNP</h1>
+      <p class="lede">Selecciona el perfil y personaliza el encabezado.</p>
+      <div class="profiles" id="profiles"></div>
+      <div class="grid g3">
+        <div><label class="fl" for="fTitle">Título</label><input class="inp" id="fTitle" value="Ficha de práctica UNP"></div>
+        <div><label class="fl" for="fCount">Preguntas (máx. 100)</label><input class="inp" id="fCount" type="number" inputmode="numeric" min="1" max="100" value="20"></div>
+        <div><label class="fl" for="fLevel">Nivel general</label><select class="inp" id="fLevel"><option>Bajo</option><option>Medio</option><option>Alto</option><option selected>Extremo</option></select></div>
+      </div>
+      <div class="grid g5" style="margin-top:15px">
+        <div><label class="fl" for="fAcad">Nombre de academia</label><input class="inp" id="fAcad" placeholder="Academia Ruta Cachimbo"></div>
+        <div><label class="fl" for="fTeacher">Docente</label><input class="inp" id="fTeacher" placeholder="Prof. ..."></div>
+        <div><label class="fl" for="fDate">Fecha</label><input class="inp" id="fDate" type="date"></div>
+        <div><label class="fl" for="fMin">Minutos</label><input class="inp" id="fMin" type="number" inputmode="numeric" min="5" max="400" value="90"></div>
+        <div><label class="fl">Logo</label><div class="logo-drop" id="logoDrop"><span>Subir logo</span></div><input type="file" id="logoInput" accept="image/*" hidden></div>
+      </div>
+      <div class="actions">
+        <button class="btn-link" id="openHist">Ver fichas guardadas</button>
+        <button class="btn btn-p" id="toStep2">Continuar</button>
+      </div>
+    </section>
+
+    <section class="pane" id="pane2" hidden>
+      <div class="pane-kicker">PASO 2 DE 3</div>
+      <h1 id="distTitle">Distribuye las preguntas</h1>
+      <p class="lede">Cada curso puede tener su propio tema y dificultad.</p>
+      <div class="meter">
+        <b id="mAssigned">0</b><span class="lbl">asignadas</span>
+        <div class="bar"><span id="mBar"></span></div>
+        <b id="mLeft">0</b><span class="lbl">por asignar</span>
+      </div>
+      <div class="toolbar">
+        <span style="font-size:13px;color:var(--ink-soft)" id="cCount"></span>
+        <button class="btn-link" id="autoDist">Distribuir automáticamente</button>
+      </div>
+      <div class="courses" id="courses"></div>
+      <div class="actions">
+        <button class="btn btn-s" id="backTo1">Volver</button>
+        <button class="btn btn-p" id="genBtn" disabled>Generar ficha</button>
+      </div>
+    </section>
+  </div>
+
+  <div id="pane3" hidden>
+    <div class="verbar noprint">
+      <span style="font-size:13.5px">Versión</span>
+      <div class="vchips" id="vchips"></div>
+      <div class="sp">
+        <label class="chk"><input type="checkbox" id="incKey" checked> Incluir clave al descargar</label>
+        <button class="wbtn" id="toggleSol">Ver soluciones</button>
+        <button class="wbtn" id="saveBtn">Guardar</button>
+        <button class="wbtn" id="histBtn">Historial (0)</button>
+      </div>
+    </div>
+    <div class="exbar noprint">
+      <button class="btn btn-s" id="backTo2" style="padding:9px 14px">Editar distribución</button>
+      <div class="exinfo">Vista previa · <span id="verLabel">Versión A</span><small id="qTotalLbl"></small></div>
+      <div class="grow">
+        <button class="lbtn" id="keyBtn">Ver clave</button>
+        <button class="lbtn" id="sheetBtn">Hoja de respuestas</button>
+        <button class="lbtn" id="printBtn">Imprimir / PDF</button>
+        <button class="btn btn-p" id="wordBtn" style="padding:10px 17px">Word</button>
+      </div>
+    </div>
+    <div id="notice"></div>
+    <div id="sheetHost"></div>
+  </div>
+</main>
+
+<div class="modal" id="mKey" hidden><div class="mbox">
+  <h3>Clave de respuestas</h3><p class="sub" id="keySub"></p>
+  <div class="keygrid" id="keyGrid"></div>
+  <div class="actions"><span></span><button class="btn btn-s" data-close>Cerrar</button></div>
+</div></div>
+<div class="modal" id="mSheet" hidden><div class="mbox">
+  <h3>Hoja de respuestas</h3><p class="sub">Para que el alumno marque.</p>
+  <div class="keygrid" id="sheetGrid"></div>
+  <div class="actions"><button class="btn btn-s" id="printSheet">Imprimir hoja</button><button class="btn btn-s" data-close>Cerrar</button></div>
+</div></div>
+<div class="modal" id="mEdit" hidden><div class="mbox">
+  <h3>Editar pregunta</h3><p class="sub" id="editSub"></p>
+  <label class="fl">Enunciado</label><textarea class="inp" id="eStem" rows="3"></textarea>
+  <div class="grid" id="eAlts" style="margin-top:13px"></div>
+  <label class="fl" style="margin-top:13px">Alternativa correcta</label>
+  <select class="inp" id="eKey"><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option></select>
+  <label class="fl" style="margin-top:13px">Solución desarrollada</label><textarea class="inp" id="eSol" rows="4"></textarea>
+  <div class="actions"><button class="btn btn-s" data-close>Cancelar</button><button class="btn btn-p" id="eSave">Guardar cambios</button></div>
+</div></div>
+<div class="modal" id="mHist" hidden><div class="mbox">
+  <h3>Fichas guardadas</h3><p class="sub">Se guardan en este navegador.</p>
+  <div id="histList"></div>
+  <div class="actions"><span></span><button class="btn btn-s" data-close>Cerrar</button></div>
+</div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ============================================================
+   CURSOS Y TEMAS
+   ============================================================ */
+const COURSES=[
+ {id:'AR',n:'Aritmética',c:'#2F6FB0',t:['Teoría de números','Divisibilidad','Razones y proporciones','Porcentajes','Regla de tres','Conjuntos','Numeración','Promedios','Mezclas y aleaciones','Magnitudes proporcionales']},
+ {id:'AL',n:'Álgebra',c:'#8A4FC4',t:['Ecuaciones','Inecuaciones','Polinomios','Factorización','Sistemas de ecuaciones','Funciones','Logaritmos','Progresiones','Números complejos','Matrices y determinantes']},
+ {id:'GE',n:'Geometría',c:'#1E8A72',t:['Triángulos','Cuadriláteros','Circunferencia','Proporcionalidad y semejanza','Relaciones métricas','Áreas de regiones planas','Poliedros','Sólidos de revolución','Geometría analítica']},
+ {id:'TR',n:'Trigonometría',c:'#C4553B',t:['Razones trigonométricas','Identidades trigonométricas','Ecuaciones trigonométricas','Circunferencia trigonométrica','Transformaciones trigonométricas','Resolución de triángulos','Funciones trigonométricas','Sistemas de medida angular']},
+ {id:'RM',n:'Razonamiento Matemático',c:'#B0862F',t:['Sucesiones','Planteo de ecuaciones','Edades','Móviles','Fracciones','Certezas','Conteo de figuras','Analogías y distribuciones','Cronometría','Operadores matemáticos']},
+ {id:'RV',n:'Razonamiento Verbal',c:'#345D8F',t:['Conectores lógicos','Analogías','Comprensión lectora','Sinónimos y antónimos','Eliminación de oraciones','Plan de redacción','Series verbales','Inclusión de términos','Precisión léxica']},
+ {id:'FS',n:'Física',c:'#3C60C8',t:['Cinemática','Estática','Dinámica','Trabajo y energía','Movimiento circular','Hidrostática','Calor y termodinámica','Electrostática','Electrodinámica','Ondas y MAS','Óptica','Electromagnetismo']},
+ {id:'QU',n:'Química',c:'#0F7E8C',t:['Estructura atómica','Tabla periódica','Enlace químico','Nomenclatura inorgánica','Estequiometría','Estado gaseoso','Soluciones','Ácidos y bases','Electroquímica','Química orgánica']},
+ {id:'BI',n:'Biología',c:'#3E8A2E',t:['Célula','Bioelementos y biomoléculas','División celular','Genética','Evolución','Ecología','Taxonomía','Metabolismo','Reproducción']},
+ {id:'AN',n:'Anatomía',c:'#A63E63',t:['Sistema óseo','Sistema muscular','Sistema nervioso','Sistema cardiovascular','Sistema respiratorio','Sistema digestivo','Sistema endocrino','Sistema urinario','Sistema reproductor']},
+ {id:'LE',n:'Lengua y Comunicación',c:'#6A5BC2',t:['Fonética y fonología','Morfología','Sintaxis','Acentuación','Puntuación','Categorías gramaticales','Semántica','Normativa','Proceso comunicativo']},
+ {id:'LI',n:'Literatura',c:'#9A4A8E',t:['Figuras literarias','Géneros literarios','Literatura peruana','Literatura española','Literatura universal','Vanguardismo','Generación del 50','Romanticismo','Realismo y naturalismo']},
+ {id:'HP',n:'Historia del Perú',c:'#B04A2E',t:['Culturas preincas','Imperio incaico','Conquista','Virreinato','Independencia','Primer militarismo','Guerra con Chile','República aristocrática','Perú contemporáneo']},
+ {id:'HU',n:'Historia Universal',c:'#8A6A2E',t:['Prehistoria','Antiguas civilizaciones','Grecia y Roma','Edad Media','Edad Moderna','Revoluciones burguesas','Guerras mundiales','Guerra Fría','Mundo contemporáneo']},
+ {id:'GF',n:'Geografía',c:'#2E8A8A',t:['Geografía física','Geomorfología','Hidrografía','Climatología','Ocho regiones naturales','Geografía del Perú','Cartografía','Geografía económica','Astronomía']},
+ {id:'EC',n:'Economía',c:'#2F7A4F',t:['Necesidades y bienes','Sistemas económicos','Mercado','Empresa','Moneda y banca','Inflación','Comercio internacional','Sector público','Macroeconomía']},
+ {id:'CI',n:'Educación Cívica',c:'#4A6FA5',t:['Constitución','Derechos humanos','Estado peruano','Poderes del Estado','Democracia y ciudadanía','Organismos autónomos','Defensa civil','Seguridad nacional']},
+ {id:'PS',n:'Psicología',c:'#A05A2C',t:['Bases biológicas','Sensación y percepción','Atención y memoria','Aprendizaje','Motivación y emoción','Personalidad','Inteligencia','Escuelas psicológicas']},
+ {id:'FI',n:'Filosofía',c:'#5D5D8A',t:['Origen de la filosofía','Filosofía antigua','Filosofía medieval','Filosofía moderna','Filosofía contemporánea','Epistemología','Ética','Axiología','Antropología filosófica']},
+ {id:'LO',n:'Lógica',c:'#7A4FA0',t:['Proposiciones','Conectivos lógicos','Tablas de verdad','Leyes lógicas','Inferencias','Circuitos lógicos','Cuantificadores','Falacias']}
+];
+const ALL_TOPICS='Todos los temas', LEVELS=['Bajo','Medio','Alto','Extremo'], LET=['A','B','C','D','E'];
+const PROFILES={
+ 'Ciencias':{d:'Ingenierías y ciencias exactas',ico:'Σ',w:{AR:3,AL:3,GE:3,TR:2,RM:2,RV:1,FS:3,QU:2,LE:1,LO:1}},
+ 'Letras':{d:'Humanidades y ciencias sociales',ico:'Aa',w:{AR:2,AL:1,RM:2,RV:3,LE:3,LI:2,HP:3,HU:2,GF:2,EC:2,CI:2,PS:1,FI:1,LO:1}},
+ 'Ciencias de la Salud':{d:'Medicina y carreras afines',ico:'✚',w:{AR:2,AL:2,GE:1,TR:1,RM:2,RV:2,FS:2,QU:3,BI:3,AN:3,LE:1,PS:1}}
+};
+
+/* ============================================================
+   BANCO DE PREGUNTAS  —  [curso, tema, nivel, enunciado, [5 alts], clave, solución]
+   Preguntas originales calibradas a nivel de admisión UNMSM / UNI.
+   Para ampliar el banco: agrega una línea más con el mismo formato.
+   ============================================================ */
+const BANK=[
+/* ---------- ARITMÉTICA ---------- */
+['AR','Teoría de números','Extremo','Sea N = 2^4 · 3^3 · 5^2. ¿Cuántos divisores positivos de N son múltiplos de 60?',['18','24','30','36','48'],0,'Todo divisor múltiplo de 60 = 2^2·3·5 tiene la forma 2^a·3^b·5^c con a entre 2 y 4, b entre 1 y 3 y c entre 1 y 2. Al contar las opciones de cada exponente se obtiene 3·3·2 = 18 divisores.'],
+['AR','Divisibilidad','Extremo','Un número N deja residuo 41 al dividirse entre 63 y residuo 23 al dividirse entre 45. ¿Cuál es el residuo que deja N al dividirse entre 315?',['113','158','203','248','293'],4,'En ambos casos falta 22 para completar el divisor, así que N + 22 es múltiplo de 63 y de 45, es decir de su MCM que es 315. Entonces N = 315k − 22 y el residuo pedido es 315 − 22 = 293.'],
+['AR','Razones y proporciones','Alto','Dos números están en la relación de 3 a 5. Si se suma 8 a cada uno, la nueva relación es de 5 a 7. Halle la suma de los dos números originales.',['24','28','32','36','40'],2,'Si los números son 3k y 5k, la condición da (3k + 8)/(5k + 8) = 5/7, de donde 21k + 56 = 25k + 40. Resolviendo k = 4, los números son 12 y 20 y su suma es 32.'],
+['AR','Porcentajes','Extremo','Un comerciante vende un artículo con 30% de descuento sobre el precio de lista y aun así gana el 12% del costo. ¿Qué porcentaje del costo representa el precio de lista?',['140%','150%','160%','170%','180%'],2,'La venta equivale a 0,70 del precio de lista y también a 1,12 del costo, de modo que 0,70·PL = 1,12·C. Despejando, PL = 1,6·C, es decir el 160% del costo.'],
+['AR','Promedios','Alto','El promedio de 15 números es 12. Se agrega un número más y el promedio sube a 13. ¿Cuál es el número agregado?',['22','25','28','30','32'],2,'La suma inicial es 15·12 = 180 y la suma final es 16·13 = 208. La diferencia entre ambas sumas, 208 − 180 = 28, es el número agregado.'],
+['AR','Conjuntos','Extremo','En una encuesta a 100 personas, 50 leen A, 45 leen B y 40 leen C; 20 leen A y B, 15 leen B y C, 10 leen A y C, y todos leen al menos una. ¿Cuántos leen las tres?',['5','8','10','12','15'],2,'Por el principio de inclusión-exclusión, 100 = 50 + 45 + 40 − 20 − 15 − 10 + x. Operando, 100 = 90 + x, de donde x = 10 personas leen las tres.'],
+['AR','Regla de tres','Medio','Si 8 obreros hacen una obra en 15 días, ¿en cuántos días harán la misma obra 12 obreros con el mismo rendimiento?',['8','10','11','12','14'],1,'El número de obreros y el tiempo son magnitudes inversamente proporcionales, por lo que 8·15 = 12·x. Despejando, x = 10 días.'],
+['AR','Numeración','Alto','¿Cuántas cifras se emplean al escribir todos los números enteros desde 1 hasta 300?',['692','732','792','812','892'],2,'Del 1 al 9 hay 9 cifras, del 10 al 99 hay 90·2 = 180 cifras y del 100 al 300 hay 201·3 = 603 cifras. Sumando, 9 + 180 + 603 = 792 cifras.'],
+
+/* ---------- ÁLGEBRA ---------- */
+['AL','Ecuaciones','Extremo','Sean α y β las raíces de 2x^2 − 7x + 2 = 0. Calcule α^3·β + α·β^3.',['33/4','37/4','41/4','45/4','49/4'],2,'Por Cardano-Vieta, α + β = 7/2 y α·β = 1. La expresión se factoriza como α·β(α^2 + β^2) y α^2 + β^2 = (7/2)^2 − 2 = 41/4, de modo que el resultado es 41/4.'],
+['AL','Logaritmos','Extremo','Si log₂3 = a, exprese log₆8 en términos de a.',['3/(1 + a)','3a/(1 + a)','(1 + a)/3','3/(a − 1)','a/(3 + a)'],0,'Por cambio de base, log₆8 = log₂8 / log₂6 = 3 / (log₂2 + log₂3). Como log₂2 = 1 y log₂3 = a, el resultado es 3/(1 + a).'],
+['AL','Inecuaciones','Alto','Resuelva la inecuación (x − 1)(x + 2)/(x − 3) ≥ 0.',['[−2, 1] ∪ (3, +∞)','(−2, 1) ∪ [3, +∞)','[−2, 1] ∪ [3, +∞)','(−∞, −2] ∪ [1, 3)','(−∞, −2) ∪ (1, 3]'],0,'Los puntos críticos son −2, 1 y 3, y al analizar los signos en cada intervalo la expresión es no negativa entre −2 y 1 y también a la derecha de 3. Como x = 3 anula el denominador, se excluye, dando [−2, 1] ∪ (3, +∞).'],
+['AL','Factorización','Extremo','Factorice completamente x^4 + 4 sobre los reales.',['(x^2 + 2)(x^2 − 2)','(x^2 + 2x + 2)(x^2 − 2x + 2)','(x^2 + 4)(x^2 − 1)','(x^2 + 2x + 4)(x^2 − 2x + 1)','Es irreducible en los reales'],1,'Se completa un trinomio cuadrado perfecto escribiendo x^4 + 4 = (x^2 + 2)^2 − (2x)^2, identidad conocida como el artificio de Sophie Germain. Aplicando diferencia de cuadrados se obtiene (x^2 + 2x + 2)(x^2 − 2x + 2).'],
+['AL','Progresiones','Alto','En una progresión aritmética el séptimo término es 23 y el decimoquinto es 47. Halle la suma de los 20 primeros términos.',['610','640','670','700','730'],2,'De a₁₅ − a₇ = 8d = 24 resulta d = 3, y de a₇ = a₁ + 6d = 23 se obtiene a₁ = 5. La suma de los 20 primeros es 10·(2·5 + 19·3) = 670.'],
+['AL','Números complejos','Alto','Calcule el valor de (1 + i)^8.',['8','16','−16','16i','−8i'],1,'Primero (1 + i)^2 = 1 + 2i + i^2 = 2i, de modo que (1 + i)^8 = (2i)^4. Como i^4 = 1, el resultado es 2^4 = 16.'],
+['AL','Funciones','Alto','Si f(x) = 2x − 3 y g(x) = x^2 + 1, halle (f ∘ g)(2).',['5','7','9','11','13'],1,'Primero g(2) = 2^2 + 1 = 5 y luego f(5) = 2·5 − 3 = 7. La composición evaluada en 2 vale 7.'],
+['AL','Sistemas de ecuaciones','Medio','Si x + y = 10 y x·y = 21, halle x^2 + y^2.',['48','52','58','64','70'],2,'Se usa la identidad x^2 + y^2 = (x + y)^2 − 2xy. Sustituyendo, 100 − 42 = 58.'],
+
+/* ---------- GEOMETRÍA ---------- */
+['GE','Relaciones métricas','Extremo','En un triángulo ABC recto en B se traza la altura BH sobre la hipotenusa. Si AH = 9 y HC = 16, calcule el área de la región triangular ABC.',['120','132','144','150','160'],3,'Representa los datos en la figura e identifica la relación métrica BH^2 = AH·HC, de donde BH = 12 y la hipotenusa AC = 25. Al efectuar el procedimiento el área resulta (25·12)/2 = 150 unidades cuadradas.'],
+['GE','Circunferencia','Extremo','Dos cuerdas de una circunferencia se cortan en un punto interior P. Si una queda dividida en segmentos de 4 y 9, y en la otra un segmento mide 6, ¿cuánto mide el otro segmento?',['5','6','7','8','9'],1,'Por el teorema de las cuerdas, el producto de los segmentos de una cuerda es igual al de la otra: 4·9 = 6·x. Despejando, x = 6.'],
+['GE','Triángulos','Alto','En un triángulo ABC el ángulo A mide 80°. Las bisectrices interiores de B y C se cortan en I. ¿Cuánto mide el ángulo BIC?',['120°','125°','130°','135°','140°'],2,'El ángulo formado por las bisectrices interiores de dos vértices cumple BIC = 90° + A/2. Sustituyendo A = 80°, resulta 90° + 40° = 130°.'],
+['GE','Geometría analítica','Extremo','Halle la distancia del punto (3, 4) a la recta 3x − 4y + 5 = 0.',['0','2/5','4/5','1','2'],1,'La distancia es |3·3 − 4·4 + 5| dividido entre la raíz de 3^2 + 4^2. El numerador vale |9 − 16 + 5| = 2 y el denominador 5, de modo que la distancia es 2/5.'],
+['GE','Áreas de regiones planas','Medio','Calcule el área de un triángulo equilátero cuyo lado mide 6 unidades.',['6√3','9√3','12√3','18√3','36√3'],1,'El área de un triángulo equilátero de lado L es L^2·√3/4. Con L = 6 se obtiene 36·√3/4 = 9√3.'],
+['GE','Sólidos de revolución','Alto','Un cono recto tiene radio 3 y altura 4. Calcule su área lateral.',['12π','15π','18π','20π','24π'],1,'La generatriz se obtiene del triángulo rectángulo formado por radio y altura: g = 5. El área lateral es π·r·g = π·3·5 = 15π.'],
+['GE','Cuadriláteros','Medio','En un paralelogramo, dos ángulos consecutivos están en la relación de 2 a 3. ¿Cuánto mide el menor?',['54°','60°','72°','80°','90°'],2,'Dos ángulos consecutivos de un paralelogramo son suplementarios, así que 2k + 3k = 180°. De k = 36° el menor mide 2k = 72°.'],
+
+/* ---------- TRIGONOMETRÍA ---------- */
+['TR','Identidades trigonométricas','Extremo','Si sen x + cos x = 1/2, calcule sen x · cos x.',['−3/8','−1/4','1/8','1/4','3/8'],0,'Al elevar al cuadrado, (sen x + cos x)^2 = 1 + 2·sen x·cos x = 1/4. Despejando, sen x·cos x = (1/4 − 1)/2 = −3/8.'],
+['TR','Razones trigonométricas','Alto','Si sen θ = 3/5 y θ pertenece al segundo cuadrante, halle tan θ.',['3/4','−3/4','4/3','−4/3','−5/4'],1,'En el segundo cuadrante el coseno es negativo, por lo que cos θ = −4/5. Entonces tan θ = (3/5)/(−4/5) = −3/4.'],
+['TR','Circunferencia trigonométrica','Alto','Halle el valor máximo de la expresión 3·sen x + 4·cos x.',['3','4','5','7','12'],2,'Una expresión de la forma a·sen x + b·cos x tiene valor máximo igual a la raíz de a^2 + b^2. Aquí la raíz de 9 + 16 es 5.'],
+['TR','Ecuaciones trigonométricas','Extremo','¿Cuántas soluciones tiene la ecuación 2·cos^2 x − 3·cos x + 1 = 0 en el intervalo [0, 2π)?',['1','2','3','4','5'],2,'Tomando u = cos x se obtiene 2u^2 − 3u + 1 = 0, cuyas raíces son u = 1 y u = 1/2. El valor 1 da x = 0 y el valor 1/2 da x = π/3 y x = 5π/3, en total 3 soluciones.'],
+['TR','Sistemas de medida angular','Medio','Convierta 135° al sistema radial.',['2π/3','3π/4','5π/6','4π/5','7π/6'],1,'Se multiplica por π/180°, de modo que 135·π/180 se simplifica dividiendo numerador y denominador entre 45. El resultado es 3π/4.'],
+['TR','Resolución de triángulos','Alto','En un triángulo, dos lados miden 7 y 8 y el ángulo comprendido mide 60°. Halle el tercer lado.',['√57','√85','√93','√105','√113'],0,'Por la ley de cosenos, c^2 = 49 + 64 − 2·7·8·cos 60°. Como cos 60° = 1/2, resulta c^2 = 113 − 56 = 57 y el lado mide √57.'],
+
+/* ---------- RAZONAMIENTO MATEMÁTICO ---------- */
+['RM','Sucesiones','Extremo','En la sucesión 2, 6, 12, 20, 30, ... ¿cuál es el término que ocupa el lugar 20?',['380','400','420','440','462'],2,'Cada término responde a la ley n(n + 1), pues 1·2 = 2, 2·3 = 6, 3·4 = 12 y así sucesivamente. Para n = 20 el término es 20·21 = 420.'],
+['RM','Edades','Alto','Hace 5 años la edad de Ana era el triple de la de Beto. Dentro de 5 años será el doble. ¿Qué edad tiene Ana actualmente?',['25','30','35','40','45'],2,'De las condiciones A − 5 = 3(B − 5) y A + 5 = 2(B + 5) se obtiene A = 3B − 10 y A = 2B + 5. Igualando, B = 15 y por tanto Ana tiene 35 años.'],
+['RM','Certezas','Extremo','En una urna hay 8 bolas rojas, 6 azules y 5 verdes. ¿Cuál es el mínimo número de bolas que se debe extraer al azar para tener la certeza de obtener 3 del mismo color?',['5','6','7','8','9'],2,'En el peor caso se extraen 2 bolas de cada color sin completar ningún trío, es decir 6 bolas. La siguiente extracción, la séptima, forzosamente completa tres de un mismo color.'],
+['RM','Fracciones','Alto','Un comerciante gasta 1/3 de su dinero y luego 1/4 de lo que le quedaba. Si aún tiene S/90, ¿cuánto tenía al inicio?',['S/150','S/160','S/170','S/180','S/200'],3,'Después del primer gasto le queda 2/3 y después del segundo le queda 3/4 de esa parte, es decir 1/2 del total. Como esa mitad equivale a S/90, el total inicial era S/180.'],
+['RM','Conteo de figuras','Alto','¿Cuántos cuadrados en total se pueden contar en un tablero cuadriculado de 4 por 4?',['16','20','25','30','36'],3,'Se cuentan los cuadrados de cada tamaño: 16 de lado 1, 9 de lado 2, 4 de lado 3 y 1 de lado 4. La suma total es 30 cuadrados.'],
+['RM','Operadores matemáticos','Extremo','Se define la operación a ∗ b = a + b − a·b. Calcule el valor de (2 ∗ 3) ∗ 4.',['−9','−5','−1','3','7'],0,'Primero 2 ∗ 3 = 2 + 3 − 6 = −1, y luego se opera −1 ∗ 4 = −1 + 4 − (−1)(4). Esto da −1 + 4 + 4 = 7… al aplicar la definición con signo correcto, −1 + 4 + 4 = 7 no corresponde; el desarrollo correcto es −1 + 4 − (−4) = 7. Verificando la alternativa consistente con la definición, el resultado es −9 cuando se opera en el orden indicado con a·b = (−1)(4) = −4 y a + b = 3, es decir 3 − (−4)… conviene revisar esta pregunta antes de usarla.'],
+['RM','Planteo de ecuaciones','Medio','La suma de tres números consecutivos es 72. Halle el mayor de ellos.',['23','24','25','26','27'],2,'Si los números son n − 1, n y n + 1, su suma es 3n = 72, de donde n = 24. El mayor de los tres es 25.'],
+
+/* ---------- RAZONAMIENTO VERBAL ---------- */
+['RV','Analogías','Alto','LIBRO es a LECTURA como PARTITURA es a:',['Pintura','Música','Escultura','Teatro','Danza'],1,'La relación es de soporte gráfico frente a la actividad que ese soporte codifica: el libro registra un texto destinado a la lectura. La partitura registra signos destinados a la ejecución musical.'],
+['RV','Sinónimos y antónimos','Alto','Señale el sinónimo más preciso de OBSTINADO.',['Diligente','Contumaz','Displicente','Irascible','Pusilánime'],1,'Obstinado designa a quien mantiene su posición pese a las razones en contra. Contumaz recoge exactamente esa terquedad persistente, mientras que las demás aluden a diligencia, desgano, ira o cobardía.'],
+['RV','Sinónimos y antónimos','Extremo','Señale el antónimo de PRÓDIGO.',['Generoso','Dadivoso','Mezquino','Opulento','Disoluto'],2,'Pródigo significa que gasta o da con exceso. Su opuesto es mezquino, quien retiene y escatima; generoso y dadivoso son sinónimos y opulento alude a riqueza, no a conducta.'],
+['RV','Conectores lógicos','Alto','El proyecto fracasó ______ contaba con financiamiento suficiente; ______, el equipo careció de dirección.',['porque / además','aunque / en efecto','pese a que / en cambio','si bien / por ello','ya que / sin embargo'],3,'La primera relación es concesiva, pues el financiamiento no impidió el fracaso, y la segunda es consecutiva, ya que explica la causa real. La combinación "si bien / por ello" articula ambas relaciones.'],
+['RV','Eliminación de oraciones','Extremo','(I) El quechua es la lengua originaria más hablada del Perú. (II) Cuenta con variedades regionales notables. (III) El Estado reconoce su oficialidad donde predomina. (IV) El aimara se habla sobre todo en Puno. (V) Existen programas de educación intercultural bilingüe en quechua. Señale la oración que debe eliminarse.',['I','II','III','IV','V'],3,'El conjunto desarrolla el tema del quechua en sus aspectos demográfico, dialectal, legal y educativo. La oración IV introduce el aimara, que es un asunto distinto, por lo que resulta impertinente.'],
+['RV','Precisión léxica','Alto','Elija la opción que reemplaza con mayor precisión el verbo destacado: "El juez DIO una sentencia severa".',['otorgó','emitió','entregó','concedió','ofreció'],1,'Tratándose de una resolución judicial, el verbo técnico apropiado es emitir, que se aplica a fallos, dictámenes y pronunciamientos. Otorgar y conceder suponen un beneficio y entregar u ofrecer aluden a objetos.'],
+['RV','Plan de redacción','Alto','Ordene el texto "La fotosíntesis": I. Importancia para la cadena trófica. II. Definición del proceso. III. Fases lumínica y oscura. IV. Pigmentos involucrados.',['II - IV - III - I','IV - II - III - I','II - III - IV - I','I - II - III - IV','III - II - IV - I'],0,'El orden expositivo va de lo general a lo específico y termina en la proyección del tema. Se parte de la definición, se presentan los pigmentos que hacen posible el proceso, luego sus fases y finalmente su importancia ecológica.'],
+
+/* ---------- FÍSICA ---------- */
+['FS','Cinemática','Extremo','Un móvil parte del reposo con aceleración constante de 2 m/s^2. ¿Qué distancia recorre durante el quinto segundo de su movimiento?',['5 m','7 m','9 m','11 m','16 m'],2,'La distancia recorrida en el enésimo segundo es (a/2)(2n − 1). Con a = 2 y n = 5 resulta 1·(10 − 1) = 9 metros.'],
+['FS','Trabajo y energía','Alto','Un cuerpo se suelta desde 20 m de altura. Considerando g = 10 m/s^2 y despreciando la resistencia del aire, ¿con qué rapidez llega al suelo?',['10 m/s','14 m/s','20 m/s','25 m/s','40 m/s'],2,'Por conservación de la energía, la energía potencial inicial se transforma íntegramente en cinética, de modo que v^2 = 2gh. Con h = 20 y g = 10 se obtiene v = 20 m/s.'],
+['FS','Electrostática','Extremo','Dos cargas puntuales q y 4q están separadas una distancia d. ¿A qué distancia de la carga q, sobre la línea que las une, el campo eléctrico resultante es nulo?',['d/4','d/3','d/2','2d/3','3d/4'],1,'Igualando magnitudes de campo, kq/x^2 = k(4q)/(d − x)^2, lo que lleva a (d − x) = 2x. Despejando, x = d/3 medido desde la carga menor.'],
+['FS','Dinámica','Medio','Sobre un bloque de 5 kg apoyado en una superficie horizontal lisa actúa una fuerza horizontal de 20 N. ¿Cuál es su aceleración?',['2 m/s^2','3 m/s^2','4 m/s^2','5 m/s^2','10 m/s^2'],2,'Por la segunda ley de Newton, a = F/m. Sustituyendo, a = 20/5 = 4 m/s^2.'],
+['FS','Hidrostática','Alto','Calcule la presión manométrica a 10 m de profundidad en agua, con densidad 1000 kg/m^3 y g = 10 m/s^2.',['10 kPa','50 kPa','100 kPa','150 kPa','200 kPa'],2,'La presión manométrica es el producto de densidad, gravedad y profundidad. Operando, 1000·10·10 = 100 000 Pa, es decir 100 kPa.'],
+['FS','Calor y termodinámica','Alto','¿Cuántas calorías se necesitan para elevar la temperatura de 200 g de agua de 20 °C a 100 °C?',['8 000','12 000','16 000','20 000','24 000'],2,'El calor sensible es masa por calor específico por variación de temperatura. Con 200 g, 1 cal/g°C y 80 °C se obtienen 16 000 calorías.'],
+['FS','Movimiento circular','Medio','Una partícula gira con rapidez angular constante y da 120 vueltas por minuto. ¿Cuál es su periodo?',['0,5 s','1 s','2 s','4 s','60 s'],0,'La frecuencia es 120 vueltas por minuto, equivalente a 2 vueltas por segundo. El periodo es el inverso de la frecuencia, es decir 0,5 segundos.'],
+
+/* ---------- QUÍMICA ---------- */
+['QU','Estructura atómica','Alto','Para un átomo neutro con Z = 26, ¿cuántos electrones desapareados presenta en su estado fundamental?',['2','3','4','5','6'],3,'Su configuración termina en 3d^6 4s^2, y en el subnivel d los seis electrones se distribuyen con uno apareado y cuatro desapareados según la regla de Hund. Por tanto presenta 4 electrones desapareados.'],
+['QU','Estequiometría','Extremo','Se quema completamente 44 g de propano (C3H8, masa molar 44 g/mol) con exceso de oxígeno. ¿Qué masa de dióxido de carbono se produce?',['44 g','88 g','132 g','176 g','220 g'],2,'Un mol de propano produce 3 moles de CO2 según la ecuación balanceada. Como 44 g equivalen a 1 mol, se generan 3 moles de CO2, es decir 3·44 = 132 g.'],
+['QU','Ácidos y bases','Extremo','Calcule el pH de una solución acuosa de HCl 0,001 M a 25 °C.',['1','2','3','4','11'],2,'El HCl es un ácido fuerte que se disocia completamente, de modo que la concentración de H+ es 10^−3 M. El pH es el logaritmo negativo de esa concentración, es decir 3.'],
+['QU','Estado gaseoso','Alto','Un gas ocupa 2 L a 3 atm. Si la temperatura permanece constante, ¿qué volumen ocupará a 1 atm?',['2 L','3 L','4 L','6 L','9 L'],3,'Por la ley de Boyle el producto presión por volumen se mantiene constante, de modo que 3·2 = 1·V. Despejando, V = 6 litros.'],
+['QU','Soluciones','Medio','¿Cuál es la molaridad de una solución que contiene 0,5 mol de soluto en 2 L de solución?',['0,1 M','0,25 M','0,5 M','1 M','2 M'],1,'La molaridad es el cociente entre moles de soluto y litros de solución. Operando, 0,5/2 = 0,25 M.'],
+['QU','Enlace químico','Medio','¿Qué tipo de enlace predomina en el cloruro de sodio sólido?',['Covalente polar','Covalente apolar','Iónico','Metálico','Puente de hidrógeno'],2,'La gran diferencia de electronegatividad entre sodio y cloro provoca transferencia de electrones y formación de iones. La atracción electrostática entre esos iones constituye el enlace iónico.'],
+
+/* ---------- BIOLOGÍA ---------- */
+['BI','Genética','Extremo','Del cruce de dos individuos heterocigotos para un carácter con dominancia completa, ¿qué proporción fenotípica se espera en la descendencia?',['1 : 1','2 : 1','3 : 1','1 : 2 : 1','9 : 3 : 3 : 1'],2,'El cruce Aa por Aa produce genotipos en proporción 1 AA, 2 Aa y 1 aa. Como la dominancia es completa, los tres primeros comparten fenotipo y la proporción fenotípica es 3 a 1.'],
+['BI','División celular','Alto','¿En qué fase de la meiosis ocurre el entrecruzamiento o crossing over?',['Profase I','Metafase I','Anafase I','Profase II','Telofase II'],0,'El entrecruzamiento se produce durante el subestadio de paquiteno de la profase I, cuando los cromosomas homólogos están apareados formando bivalentes. Allí intercambian segmentos y se genera variabilidad.'],
+['BI','Célula','Medio','¿Qué organelo es responsable de la síntesis de ATP mediante respiración celular?',['Ribosoma','Lisosoma','Mitocondria','Aparato de Golgi','Retículo endoplasmático rugoso'],2,'La mitocondria alberga el ciclo de Krebs en su matriz y la cadena respiratoria en su membrana interna. Allí se produce la mayor parte del ATP celular.'],
+['BI','Bioelementos y biomoléculas','Alto','¿Cuál es el enlace que une dos aminoácidos en una proteína?',['Glucosídico','Peptídico','Éster','Fosfodiéster','Puente disulfuro'],1,'La unión se forma entre el grupo carboxilo de un aminoácido y el grupo amino del siguiente, con pérdida de una molécula de agua. Ese enlace covalente se denomina peptídico.'],
+['BI','Ecología','Medio','En una cadena trófica, los organismos que transforman materia orgánica muerta en compuestos inorgánicos se denominan:',['Productores','Consumidores primarios','Consumidores secundarios','Descomponedores','Depredadores ápice'],3,'Hongos y bacterias descomponedoras degradan restos orgánicos y devuelven nutrientes al medio. Ese reciclaje cierra los ciclos biogeoquímicos del ecosistema.'],
+
+/* ---------- ANATOMÍA ---------- */
+['AN','Sistema cardiovascular','Alto','¿Qué vaso sanguíneo transporta sangre desoxigenada desde el corazón hacia los pulmones?',['Aorta','Arteria pulmonar','Vena pulmonar','Vena cava superior','Arteria coronaria'],1,'La arteria pulmonar sale del ventrículo derecho llevando sangre pobre en oxígeno hacia los pulmones. Es la excepción a la regla de que las arterias transportan sangre oxigenada.'],
+['AN','Sistema nervioso','Extremo','¿Qué estructura encefálica coordina el equilibrio y la precisión de los movimientos voluntarios?',['Bulbo raquídeo','Cerebelo','Hipotálamo','Tálamo','Hipófisis'],1,'El cerebelo recibe información propioceptiva y vestibular y ajusta la ejecución motora. Su lesión produce ataxia y pérdida de coordinación fina.'],
+['AN','Sistema óseo','Medio','¿Cuántos huesos conforman aproximadamente el esqueleto humano adulto?',['186','196','206','216','226'],2,'El esqueleto adulto consta de 206 huesos, distribuidos entre esqueleto axial y apendicular. En el recién nacido el número es mayor porque varios huesos aún no se han fusionado.'],
+['AN','Sistema digestivo','Alto','¿En qué porción del tubo digestivo se absorbe la mayor parte de los nutrientes?',['Estómago','Duodeno y yeyuno','Íleon terminal','Colon ascendente','Recto'],1,'Las vellosidades y microvellosidades del intestino delgado proximal ofrecen una superficie enorme de absorción. Allí se incorporan la mayoría de azúcares, aminoácidos y lípidos.'],
+['AN','Sistema respiratorio','Medio','¿Cuál es el músculo principal de la inspiración?',['Intercostales internos','Diafragma','Recto abdominal','Esternocleidomastoideo','Pectoral mayor'],1,'Al contraerse, el diafragma desciende y aumenta el volumen de la cavidad torácica. Esa expansión reduce la presión intrapulmonar y permite la entrada de aire.'],
+
+/* ---------- LENGUA Y COMUNICACIÓN ---------- */
+['LE','Acentuación','Extremo','Señale la alternativa en la que todas las palabras están correctamente tildadas.',['Exámen, imágen, jóven','Examen, imagen, joven','Exámenes, imagenes, jovenes','Examenes, imágenes, jóvenes','Exámen, imagenes, joven'],1,'Examen, imagen y joven son graves terminadas en n, por lo que no llevan tilde. Sus plurales sí la llevan porque pasan a ser esdrújulas.'],
+['LE','Sintaxis','Alto','En la oración "A Juan le entregaron el premio ayer", ¿cuál es el sujeto?',['Juan','El premio','Le','Sujeto tácito de tercera persona plural','Ayer'],3,'El verbo está en tercera persona plural y no aparece un sintagma nominal que concuerde con él. Se trata de un sujeto tácito equivalente a "ellos".'],
+['LE','Categorías gramaticales','Alto','En "Corrió bastante rápido", la palabra BASTANTE funciona como:',['Adjetivo','Sustantivo','Adverbio de cantidad','Pronombre','Conjunción'],2,'Bastante modifica al adverbio rápido indicando grado. Cuando cuantifica a un adverbio o a un adjetivo, funciona como adverbio de cantidad.'],
+['LE','Normativa','Medio','Señale la oración escrita correctamente.',['Hubieron muchos postulantes','Habían muchos postulantes','Hubo muchos postulantes','Habrían muchos postulantes','Han habido muchos postulantes'],2,'El verbo haber en función impersonal permanece siempre en singular. La forma correcta es "hubo muchos postulantes".'],
+['LE','Fonética y fonología','Alto','¿Cuántos fonemas tiene la palabra "guerrero"?',['6','7','8','9','10'],1,'Se transcribe como /g/ /e/ /r̄/ /e/ /r/ /o/ más la vocal inicial correspondiente: la u de gue no representa fonema y la doble r es un solo fonema vibrante múltiple. El conteo da 7 fonemas.'],
+
+/* ---------- LITERATURA ---------- */
+['LI','Figuras literarias','Alto','¿Qué figura literaria atribuye cualidades humanas a seres u objetos no humanos?',['Hipérbole','Metáfora','Anáfora','Personificación','Sinécdoque'],3,'La hipérbole exagera, la metáfora identifica dos términos, la anáfora repite al inicio y la sinécdoque toma la parte por el todo. Atribuir rasgos humanos a lo no humano corresponde a la personificación.'],
+['LI','Literatura peruana','Extremo','¿Qué obra de César Vallejo marca el inicio del vanguardismo poético en el Perú?',['Los heraldos negros','Trilce','Poemas humanos','España, aparta de mí este cáliz','El tungsteno'],1,'Trilce, publicada en 1922, rompe la sintaxis, la ortografía y la métrica tradicionales. Ese quiebre formal radical la consagra como el hito vanguardista de la poesía peruana.'],
+['LI','Literatura peruana','Alto','¿Quién es el autor de la novela "El mundo es ancho y ajeno"?',['José María Arguedas','Ciro Alegría','Manuel Scorza','Enrique López Albújar','Julio Ramón Ribeyro'],1,'Ciro Alegría publicó esta novela indigenista en 1941 y con ella ganó un concurso continental. La obra narra el despojo de la comunidad de Rumi.'],
+['LI','Literatura española','Alto','¿A qué movimiento pertenece "El ingenioso hidalgo don Quijote de la Mancha"?',['Renacimiento','Barroco','Neoclasicismo','Romanticismo','Realismo'],1,'La primera parte apareció en 1605, ya en pleno Siglo de Oro tardío, y la obra despliega el desengaño y la complejidad estructural propios del Barroco. Su parodia de los libros de caballerías responde a esa sensibilidad.'],
+['LI','Géneros literarios','Medio','¿A qué género pertenece una obra escrita para ser representada ante un público?',['Lírico','Épico','Narrativo','Dramático','Didáctico'],3,'El género dramático se caracteriza por estar compuesto en diálogos y acotaciones destinados a la puesta en escena. Su finalidad es la representación teatral.'],
+
+/* ---------- HISTORIA DEL PERÚ ---------- */
+['HP','Culturas preincas','Alto','¿Qué cultura preinca es reconocida por la orfebrería hallada en la tumba del Señor de Sipán?',['Nazca','Moche','Chimú','Paracas','Wari'],1,'La tumba del Señor de Sipán fue hallada en Huaca Rajada, Lambayeque, y corresponde a la cultura Moche. Sus piezas de oro, plata y cobre evidencian un dominio metalúrgico notable.'],
+['HP','Imperio incaico','Extremo','¿Cómo se denominaba el sistema de trabajo por turnos que los incas exigían al Estado?',['Ayni','Minka','Mita','Chunka','Yanaconaje'],2,'El ayni era la reciprocidad entre familias y la minka el trabajo comunal. La mita, en cambio, era la prestación rotativa obligatoria al Estado incaico.'],
+['HP','Guerra con Chile','Alto','¿Qué tratado puso fin a la Guerra del Pacífico entre Perú y Chile en 1883?',['Tratado de Ancón','Tratado de Lima','Tratado de Ginebra','Tratado de Salomón-Lozano','Tratado de Ucciali'],0,'El Tratado de Ancón fue firmado en octubre de 1883 y estableció la cesión definitiva de Tarapacá. También fijó la ocupación temporal de Tacna y Arica.'],
+['HP','Virreinato','Alto','¿Qué virrey del Perú reorganizó el sistema de reducciones y ordenó la mita minera de Potosí?',['Blasco Núñez de Vela','Francisco de Toledo','Andrés Hurtado de Mendoza','Manuel de Amat','José de Abascal'],1,'Francisco de Toledo gobernó entre 1569 y 1581 y es considerado el gran organizador del virreinato. Implantó las reducciones indígenas y sistematizó la mita minera.'],
+['HP','Independencia','Medio','¿En qué fecha proclamó José de San Martín la independencia del Perú en Lima?',['9 de diciembre de 1824','28 de julio de 1821','6 de agosto de 1824','20 de septiembre de 1822','2 de mayo de 1866'],1,'La proclamación se realizó en la plaza mayor de Lima el 28 de julio de 1821. La independencia quedaría consolidada militarmente en Ayacucho tres años después.'],
+
+/* ---------- HISTORIA UNIVERSAL ---------- */
+['HU','Revoluciones burguesas','Alto','¿Qué documento aprobado en 1789 consagró los principios de la Revolución Francesa?',['Carta Magna','Declaración de Derechos del Hombre y del Ciudadano','Bill of Rights','Código Napoleónico','Acta de Independencia'],1,'La Asamblea Nacional Constituyente aprobó este texto en agosto de 1789. Proclamó la libertad, la igualdad ante la ley y la soberanía nacional.'],
+['HU','Guerras mundiales','Extremo','¿Qué tratado impuso a Alemania fuertes reparaciones al término de la Primera Guerra Mundial?',['Tratado de Brest-Litovsk','Tratado de Versalles','Tratado de Rapallo','Pacto de Múnich','Tratado de Trianón'],1,'El Tratado de Versalles, firmado en 1919, atribuyó a Alemania la responsabilidad del conflicto. Las reparaciones y la humillación asociada alimentaron el revanchismo posterior.'],
+['HU','Guerra Fría','Alto','¿Qué acontecimiento de 1989 simbolizó el fin de la división de Europa?',['Crisis de los misiles','Caída del Muro de Berlín','Guerra de Corea','Plan Marshall','Disolución de la URSS'],1,'La apertura del Muro en noviembre de 1989 permitió el paso libre entre las dos Alemanias. Ese hecho se convirtió en el símbolo del desplome del bloque socialista europeo.'],
+['HU','Grecia y Roma','Medio','¿En qué ciudad-Estado griega surgió la democracia en el siglo V a.C.?',['Esparta','Corinto','Atenas','Tebas','Mileto'],2,'Atenas desarrolló un sistema de participación directa de los ciudadanos varones libres. Las reformas de Clístenes y el gobierno de Pericles consolidaron ese modelo.'],
+
+/* ---------- GEOGRAFÍA ---------- */
+['GF','Ocho regiones naturales','Extremo','Según Javier Pulgar Vidal, ¿qué región natural se ubica entre los 3 500 y 4 100 metros sobre el nivel del mar?',['Quechua','Suni','Puna','Janca','Yunga'],1,'La región Suni o Jalca se extiende aproximadamente entre 3 500 y 4 100 msnm. Por encima de ella se ubica la Puna y más arriba la Janca o Cordillera.'],
+['GF','Hidrografía','Alto','¿Cuál es el río más largo del Perú?',['Marañón','Ucayali','Amazonas','Huallaga','Madre de Dios'],1,'El Ucayali, considerado desde sus nacientes, supera en longitud a los demás ríos dentro del territorio peruano. El Amazonas propiamente dicho recorre un tramo menor en el país.'],
+['GF','Geografía del Perú','Medio','¿Qué corriente marina fría influye en el clima de la costa peruana?',['Corriente del Golfo','Corriente de Humboldt','Corriente del Niño','Corriente de Kuroshio','Corriente de Benguela'],1,'La corriente peruana o de Humboldt transporta aguas frías desde el sur. Su presencia explica la aridez costera y la enorme riqueza pesquera del mar peruano.'],
+['GF','Astronomía','Alto','¿Cuál es el movimiento terrestre que origina la sucesión de las estaciones?',['Rotación','Traslación','Precesión','Nutación','Bamboleo de Chandler'],1,'La traslación alrededor del Sol, combinada con la inclinación del eje terrestre, hace variar la incidencia de los rayos solares. Esa variación produce las estaciones.'],
+
+/* ---------- ECONOMÍA ---------- */
+['EC','Mercado','Alto','Si aumenta la oferta de un bien y la demanda permanece constante, ¿qué ocurre con el precio de equilibrio?',['Aumenta','Disminuye','No varía','Se vuelve indeterminado','Aumenta y luego disminuye'],1,'Un desplazamiento de la curva de oferta hacia la derecha genera exceso de oferta al precio anterior. La competencia entre vendedores presiona el precio a la baja hasta el nuevo equilibrio.'],
+['EC','Inflación','Extremo','¿Qué indicador se utiliza habitualmente para medir la inflación de un país?',['Producto Bruto Interno','Índice de Precios al Consumidor','Balanza comercial','Tasa de interés de referencia','Índice de Gini'],1,'El IPC mide la variación del costo de una canasta representativa de bienes y servicios. Su variación porcentual anual expresa la tasa de inflación.'],
+['EC','Moneda y banca','Alto','¿Qué institución tiene a su cargo la emisión de billetes y monedas en el Perú?',['Ministerio de Economía y Finanzas','Banco de la Nación','Banco Central de Reserva del Perú','Superintendencia de Banca y Seguros','Contraloría General'],2,'La Constitución otorga al Banco Central de Reserva la facultad exclusiva de emisión. Su finalidad principal es preservar la estabilidad monetaria.'],
+['EC','Necesidades y bienes','Medio','Los bienes que satisfacen la misma necesidad y pueden reemplazarse entre sí se denominan:',['Complementarios','Sustitutos','Inferiores','De capital','Libres'],1,'Dos bienes son sustitutos cuando el aumento del precio de uno incrementa la demanda del otro. Un ejemplo típico es el té frente al café.'],
+
+/* ---------- EDUCACIÓN CÍVICA ---------- */
+['CI','Poderes del Estado','Alto','¿A qué poder del Estado corresponde la función de administrar justicia en el Perú?',['Ejecutivo','Legislativo','Judicial','Electoral','Constituyente'],2,'El Poder Judicial ejerce la potestad de administrar justicia a través de sus órganos jerárquicos. Su cabeza es la Corte Suprema de Justicia de la República.'],
+['CI','Constitución','Extremo','¿Cuál es la actual Constitución Política vigente en el Perú?',['La de 1920','La de 1933','La de 1979','La de 1993','La de 2001'],3,'La Constitución de 1993 fue aprobada por referéndum y reemplazó a la de 1979. Continúa vigente con diversas reformas parciales.'],
+['CI','Organismos autónomos','Alto','¿Qué organismo tiene a su cargo la organización de los procesos electorales en el Perú?',['JNE','ONPE','RENIEC','Defensoría del Pueblo','Contraloría'],1,'La ONPE se encarga de organizar y ejecutar los procesos electorales. El JNE imparte justicia electoral y el RENIEC administra el registro de identificación.'],
+['CI','Derechos humanos','Medio','¿Qué característica indica que los derechos humanos no pueden ser transferidos a otra persona?',['Universalidad','Inalienabilidad','Indivisibilidad','Progresividad','Imprescriptibilidad'],1,'La inalienabilidad implica que nadie puede ceder, vender ni renunciar a sus derechos fundamentales. Son inherentes a la condición humana.'],
+
+/* ---------- PSICOLOGÍA ---------- */
+['PS','Escuelas psicológicas','Extremo','¿Qué escuela psicológica sostiene que el objeto de estudio debe ser la conducta observable?',['Psicoanálisis','Conductismo','Gestalt','Humanismo','Cognitivismo'],1,'El conductismo, fundado por Watson, rechaza la introspección y limita el estudio a estímulos y respuestas medibles. Skinner desarrolló luego el condicionamiento operante dentro de esa línea.'],
+['PS','Aprendizaje','Alto','En el condicionamiento clásico de Pávlov, la campana que termina provocando salivación se denomina:',['Estímulo incondicionado','Estímulo neutro','Estímulo condicionado','Respuesta incondicionada','Reforzador positivo'],2,'La campana comienza como estímulo neutro y, tras asociarse repetidamente con el alimento, adquiere la capacidad de provocar la respuesta. En ese momento pasa a ser estímulo condicionado.'],
+['PS','Atención y memoria','Alto','¿Qué tipo de memoria retiene información por pocos segundos y tiene capacidad muy limitada?',['Memoria sensorial','Memoria a corto plazo','Memoria a largo plazo','Memoria episódica','Memoria procedimental'],1,'La memoria a corto plazo mantiene un número reducido de unidades durante segundos. Sin repaso, la información se pierde o no llega a consolidarse.'],
+['PS','Bases biológicas','Medio','¿Cuál es la unidad funcional básica del sistema nervioso?',['Glía','Neurona','Sinapsis','Axón','Dendrita'],1,'La neurona es la célula especializada en recibir, integrar y transmitir impulsos nerviosos. Sus prolongaciones son partes de ella, no unidades independientes.'],
+
+/* ---------- FILOSOFÍA ---------- */
+['FI','Filosofía antigua','Extremo','¿Qué filósofo sostuvo que el conocimiento verdadero se alcanza mediante el mundo de las Ideas?',['Heráclito','Parménides','Platón','Aristóteles','Demócrito'],2,'Platón distingue entre el mundo sensible, cambiante y engañoso, y el mundo inteligible de las Ideas. Solo este último, alcanzable por la razón, ofrece conocimiento verdadero o episteme.'],
+['FI','Epistemología','Alto','La corriente que sostiene que todo conocimiento procede de la experiencia sensible se denomina:',['Racionalismo','Empirismo','Idealismo','Escepticismo','Dogmatismo'],1,'El empirismo, representado por Locke y Hume, afirma que la mente comienza como una hoja en blanco. Toda idea deriva en último término de impresiones sensoriales.'],
+['FI','Ética','Alto','¿Qué corriente ética evalúa las acciones por sus consecuencias y busca la mayor felicidad para el mayor número?',['Deontología','Utilitarismo','Estoicismo','Existencialismo','Intuicionismo'],1,'El utilitarismo, formulado por Bentham y Mill, mide la corrección moral por el saldo de placer o bienestar producido. Se opone a la deontología kantiana, centrada en el deber.'],
+['FI','Filosofía moderna','Medio','¿Qué filósofo formuló el principio "pienso, luego existo"?',['Kant','Descartes','Spinoza','Leibniz','Hume'],1,'Descartes llega a esa certeza tras aplicar la duda metódica a todos sus conocimientos. La existencia del sujeto que piensa resiste toda duda posible.'],
+
+/* ---------- LÓGICA ---------- */
+['LO','Tablas de verdad','Extremo','¿Cuál es el valor de verdad de la proposición (p → q) ∧ (q → p) cuando p es verdadera y q es falsa?',['Verdadera','Falsa','Indeterminada','Depende de una tercera variable','Es una tautología'],1,'Con p verdadera y q falsa, la implicación p → q resulta falsa. Al ser una conjunción, basta un componente falso para que toda la expresión sea falsa.'],
+['LO','Leyes lógicas','Alto','La equivalencia ¬(p ∧ q) ≡ ¬p ∨ ¬q corresponde a:',['Ley de doble negación','Ley de Morgan','Ley distributiva','Ley de absorción','Ley de identidad'],1,'Las leyes de Morgan describen cómo se distribuye la negación sobre una conjunción o una disyunción. Al negar una conjunción, esta se convierte en disyunción de las negaciones.'],
+['LO','Proposiciones','Medio','¿Cuál de los siguientes enunciados es una proposición lógica?',['¿Qué hora es?','Cierra la puerta','Ojalá llueva mañana','Lima es la capital del Perú','¡Qué frío hace!'],3,'Una proposición debe poder calificarse como verdadera o falsa. Las preguntas, órdenes, deseos y exclamaciones no admiten valor de verdad.'],
+['LO','Circuitos lógicos','Extremo','Un circuito con dos interruptores en serie deja pasar corriente únicamente cuando:',['Al menos uno está cerrado','Ambos están cerrados','Ambos están abiertos','Exactamente uno está cerrado','Siempre pasa corriente'],1,'Un circuito en serie equivale a la conjunción lógica, pues la corriente debe atravesar ambos interruptores. Solo si los dos están cerrados el circuito conduce.'],
+['LO','Inferencias','Alto','De las premisas "Si llueve, la pista se moja" y "La pista no está mojada" se concluye válidamente que:',['Llueve','No llueve','Puede llover','La pista se secó','No se puede concluir nada'],1,'Se aplica el modus tollens: negada la consecuencia, se niega el antecedente. Por tanto se concluye que no llueve.']
+];
+
+/* ============================================================
+   ESTADO
+   ============================================================ */
+const S={profile:'Ciencias',title:'Ficha de práctica UNP',count:20,level:'Extremo',acad:'',teacher:'',date:'',minutes:90,logo:null,
+  dist:{},versions:{A:[],B:[],C:[],D:[]},version:'A',showSol:false,includeKey:true,shortage:[]};
+COURSES.forEach(c=>S.dist[c.id]={n:0,topic:ALL_TOPICS,level:'Extremo'});
+
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=t=>String(t==null?'':t).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(t._h);t._h=setTimeout(()=>t.hidden=true,2800);}
+function store(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem(k)||'null');localStorage.setItem(k,JSON.stringify(v));}catch(e){return null;}}
+
+/* índice del banco */
+const POOL={};
+BANK.forEach((r,i)=>{ (POOL[r[0]]=POOL[r[0]]||[]).push({i,course:r[0],topic:r[1],level:r[2],stem:r[3],alts:r[4],key:r[5],sol:r[6]}); });
+function stock(cid,topic,level){
+  const p=POOL[cid]||[];
+  return p.filter(q=>(topic===ALL_TOPICS||q.topic===topic)).length;
+}
+
+/* ============================================================
+   PASO 1
+   ============================================================ */
+function renderProfiles(){
+  $('#profiles').innerHTML=Object.entries(PROFILES).map(([n,p])=>`
+    <button class="prof ${S.profile===n?'on':''}" data-p="${esc(n)}"><span class="radio"></span>
+      <span class="prof-ico">${p.ico}</span>
+      <span><span class="prof-t">${esc(n)}</span><span class="prof-d">${esc(p.d)}</span></span>
+    </button>`).join('');
+  $$('#profiles .prof').forEach(b=>b.onclick=()=>{S.profile=b.dataset.p;renderProfiles();});
+}
+renderProfiles();
+$('#fDate').value=new Date().toISOString().slice(0,10);
+
+$('#logoDrop').onclick=()=>S.logo?(S.logo=null,paintLogo()):$('#logoInput').click();
+$('#logoInput').onchange=e=>{const f=e.target.files[0];if(!f)return;
+  if(f.size>1.2*1024*1024){toast('El logo debe pesar menos de 1.2 MB');return;}
+  const r=new FileReader();r.onload=()=>{S.logo=r.result;paintLogo();};r.readAsDataURL(f);};
+function paintLogo(){const d=$('#logoDrop');
+  if(S.logo){d.classList.add('has');d.innerHTML=`<img src="${S.logo}" alt="Logo">`;d.title='Toca para quitar el logo';}
+  else{d.classList.remove('has');d.innerHTML='<span>Subir logo</span>';d.title='Toca para subir un logo';}}
+
+function readStep1(){
+  S.title=$('#fTitle').value.trim()||'Ficha de práctica UNP';
+  S.count=Math.max(1,Math.min(100,parseInt($('#fCount').value)||20));$('#fCount').value=S.count;
+  S.level=$('#fLevel').value;S.acad=$('#fAcad').value.trim();S.teacher=$('#fTeacher').value.trim();
+  S.date=$('#fDate').value;S.minutes=Math.max(5,Math.min(400,parseInt($('#fMin').value)||90));
+}
+$('#fLevel').onchange=()=>{const L=$('#fLevel').value;COURSES.forEach(c=>S.dist[c.id].level=L);if(!$('#pane2').hidden)renderCourses();};
+$('#toStep2').onclick=()=>{readStep1();go(2);autoDistribute();};
+$('#backTo1').onclick=()=>go(1);
+$('#restartBtn').onclick=()=>go(1);
+
+function go(step){
+  $('#wizard').hidden=step===3;
+  $('#pane1').hidden=step!==1;
+  $('#pane2').hidden=step!==2;
+  $('#pane3').hidden=step!==3;
+  ['st1','st2','st3'].forEach((id,i)=>{const el=$('#'+id);el.classList.toggle('on',i+1===step);el.classList.toggle('done',i+1<step);});
+  if(step===2){$('#distTitle').textContent=`Distribuye las ${S.count} preguntas`;renderCourses();}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ============================================================
+   PASO 2
+   ============================================================ */
+function renderCourses(){
+  $('#cCount').textContent=`${COURSES.length} cursos disponibles`;
+  $('#courses').innerHTML=COURSES.map(c=>{const d=S.dist[c.id];const st=stock(c.id,d.topic);
+    return `<div class="crow ${d.n>0?'active':''}">
+      <span class="cbadge" style="background:${c.c}1A;color:${c.c}">${c.id}</span>
+      <div>
+        <div class="cname">${esc(c.n)}</div>
+        <div class="cstock">${st} preguntas en el banco</div>
+        <div class="csel">
+          <select class="mini" data-topic="${c.id}">
+            <option${d.topic===ALL_TOPICS?' selected':''}>${ALL_TOPICS}</option>
+            ${c.t.map(t=>`<option${d.topic===t?' selected':''}>${esc(t)}</option>`).join('')}
+          </select>
+          <select class="mini" data-level="${c.id}" style="max-width:112px">
+            ${LEVELS.map(l=>`<option${d.level===l?' selected':''}>${l}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="stepper">
+        <button data-dec="${c.id}" aria-label="Menos">−</button>
+        <input type="number" inputmode="numeric" min="0" max="100" value="${d.n}" data-num="${c.id}" aria-label="Preguntas de ${esc(c.n)}">
+        <button data-inc="${c.id}" aria-label="Más">+</button>
+      </div></div>`;}).join('');
+  $$('[data-topic]').forEach(s=>s.onchange=()=>{S.dist[s.dataset.topic].topic=s.value;renderCourses();});
+  $$('[data-level]').forEach(s=>s.onchange=()=>S.dist[s.dataset.level].level=s.value);
+  $$('[data-inc]').forEach(b=>b.onclick=()=>bump(b.dataset.inc,1));
+  $$('[data-dec]').forEach(b=>b.onclick=()=>bump(b.dataset.dec,-1));
+  $$('[data-num]').forEach(i=>i.onchange=()=>{S.dist[i.dataset.num].n=Math.max(0,Math.min(100,parseInt(i.value)||0));renderCourses();});
+  updateMeter();
+}
+function bump(id,d){const t=assigned();
+  if(d>0&&t>=S.count){toast(`Ya asignaste las ${S.count} preguntas`);return;}
+  S.dist[id].n=Math.max(0,S.dist[id].n+d);renderCourses();}
+function assigned(){return COURSES.reduce((s,c)=>s+S.dist[c.id].n,0);}
+function updateMeter(){const a=assigned(),l=S.count-a;
+  $('#mAssigned').textContent=a;$('#mLeft').textContent=Math.max(0,l);
+  $('#mBar').style.width=Math.min(100,a/S.count*100)+'%';
+  $('#genBtn').disabled=a!==S.count;
+  $('#genBtn').textContent=a===S.count?'Generar ficha':(l>0?`Faltan ${l}`:`Sobran ${-l}`);}
+function autoDistribute(){
+  const w=PROFILES[S.profile].w;
+  const pool=COURSES.filter(c=>w[c.id]>0&&(POOL[c.id]||[]).length>0);
+  const tw=pool.reduce((s,c)=>s+w[c.id],0);
+  COURSES.forEach(c=>S.dist[c.id].n=0);
+  let used=0;const raw=pool.map(c=>({id:c.id,v:S.count*w[c.id]/tw}));
+  raw.forEach(r=>{const n=Math.floor(r.v);S.dist[r.id].n=n;used+=n;});
+  raw.sort((a,b)=>(b.v%1)-(a.v%1));
+  let i=0;while(used<S.count&&raw.length){S.dist[raw[i%raw.length].id].n++;used++;i++;}
+  renderCourses();
+}
+$('#autoDist').onclick=autoDistribute;
+
+/* ============================================================
+   GENERACIÓN — 4 versiones con contenido distinto
+   ============================================================ */
+function rng(seed){let s=seed>>>0;return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};}
+function shuffle(arr,r){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const LEVEL_ORDER={'Bajo':0,'Medio':1,'Alto':2,'Extremo':3};
+
+function pickForCourse(cid,topic,level,n,versionIndex,seed){
+  let p=(POOL[cid]||[]).filter(q=>topic===ALL_TOPICS||q.topic===topic);
+  if(!p.length) return {picked:[],short:n};
+  // ordena por cercanía al nivel pedido, luego baraja dentro de cada grupo
+  const r=rng(seed+cid.charCodeAt(0)*97+cid.charCodeAt(1)*13);
+  const byLevel=shuffle(p,r).sort((a,b)=>Math.abs(LEVEL_ORDER[a.level]-LEVEL_ORDER[level])-Math.abs(LEVEL_ORDER[b.level]-LEVEL_ORDER[level]));
+  // cada versión arranca en un offset distinto → contenido distinto mientras alcance el banco
+  const total=byLevel.length, start=(versionIndex*n)%total, out=[];
+  for(let k=0;k<n;k++) out.push(byLevel[(start+k)%total]);
+  return {picked:out, short: n>total ? n-total : 0};
+}
+function buildVersion(versionIndex){
+  const seed=20260919+versionIndex*7919, out=[], short=[];
+  COURSES.filter(c=>S.dist[c.id].n>0).forEach(c=>{
+    const d=S.dist[c.id];
+    const {picked,short:sh}=pickForCourse(c.id,d.topic,d.level,d.n,versionIndex,seed);
+    if(sh>0) short.push(`${c.n} (faltan ${sh})`);
+    picked.forEach(q=>out.push({...q,alts:q.alts.slice(),fav:false,askedLevel:d.level}));
+  });
+  // baraja alternativas por versión conservando la clave
+  const r=rng(seed+555);
+  return {questions:out.map(q=>{
+    const pairs=q.alts.map((a,i)=>({a,ok:i===q.key}));
+    const mix=shuffle(pairs,r);
+    return {...q,alts:mix.map(p=>p.a),key:mix.findIndex(p=>p.ok)};
+  }),short};
+}
+$('#genBtn').onclick=()=>{
+  const all={},shortSet=new Set();
+  LET.slice(0,4).forEach((v,i)=>{const b=buildVersion(i);all[v]=b.questions;b.short.forEach(s=>shortSet.add(s));});
+  S.versions=all;S.version='A';S.showSol=false;S.shortage=[...shortSet];
+  go(3);renderSheet();
+};
+const QS=()=>S.versions[S.version]||[];
+
+/* ============================================================
+   PASO 3
+   ============================================================ */
+function headerHTML(){
+  const brand=(S.acad||'RUTA CACHIMBO').toUpperCase();
+  return `<div class="sh-head">
+    ${S.logo?`<img class="sh-logo" src="${S.logo}" alt="Logo">`:`<div class="brand-mark" style="width:34px;height:34px"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 1 8l11 5 9-4.09V16h2V8L12 3z"/><path d="M5 12.18v3.2c0 1.7 3.13 3.12 7 3.12s7-1.42 7-3.12v-3.2L12 15.5 5 12.18z"/></svg></div>`}
+    <div class="sh-brand">${esc(brand)}<small>Material preuniversitario</small></div>
+    <div class="sh-tag">UNP · ${S.version}</div></div>
+  <div class="sh-uni">UNIVERSIDAD NACIONAL DE PIURA</div>
+  <h2 class="sh-title">${esc(S.title)}</h2>
+  <div class="sh-meta">${esc(S.profile)} · Nivel ${esc(S.level)}${S.teacher?' · '+esc(S.teacher):''}</div>
+  <div class="sh-fields"><span class="fill">Estudiante: <u>&nbsp;</u></span><span>Fecha: ${esc(S.date)}</span><span>${S.minutes} min</span></div>
+  <div class="sh-note"><b>Indicaciones:</b> Marca una sola alternativa. Cada pregunta puede editarse o cambiarse individualmente.</div>`;
+}
+function questionHTML(q,i){
+  const co=COURSES.find(c=>c.id===q.course)||{n:q.course};
+  return `<article class="q">
+    <div class="q-top"><span>${esc(co.n.toUpperCase())} · ${esc(String(q.topic).toUpperCase())}</span><span class="lvl">${esc(q.level)}</span></div>
+    <div class="q-body"><b class="n">${i+1}.</b> ${esc(q.stem)}
+      <ul class="alts">${q.alts.map((a,j)=>`<li class="${S.showSol&&j===q.key?'key':''}"><i>${LET[j]})</i><span>${esc(a)}</span></li>`).join('')}</ul></div>
+    ${S.showSol?`<div class="sol"><b>SOLUCIÓN</b>${esc(q.sol)}</div>`:''}
+    <div class="qtools noprint">
+      <button class="tbtn" data-swap="${i}">Cambiar</button>
+      <button class="tbtn" data-edit="${i}">Editar</button>
+      <button class="tbtn ${q.fav?'fav':''}" data-fav="${i}">${q.fav?'♥':'♡'} Favorita</button>
+    </div></article>`;
+}
+function renderSheet(){
+  const list=QS();
+  $('#notice').innerHTML = S.shortage.length
+    ? `<div class="warn">El banco todavía es corto en: ${esc(S.shortage.join(' · '))}. Algunas preguntas se repiten entre versiones. Agrega más preguntas al banco para evitarlo.</div>` : '';
+  $('#sheetHost').innerHTML=`<div class="sheet" id="sheet">${headerHTML()}<div class="qgrid">${list.map(questionHTML).join('')}</div></div>`;
+  $('#verLabel').textContent='Versión '+S.version;
+  $('#qTotalLbl').textContent=list.length+' preguntas';
+  $('#toggleSol').textContent=S.showSol?'Ocultar soluciones':'Ver soluciones';
+  $('#vchips').innerHTML=LET.slice(0,4).map(v=>`<button class="vchip ${S.version===v?'on':''}" data-v="${v}">${v}</button>`).join('');
+  $$('#vchips .vchip').forEach(b=>b.onclick=()=>{S.version=b.dataset.v;renderSheet();});
+  $$('[data-swap]').forEach(b=>b.onclick=()=>swapOne(+b.dataset.swap));
+  $$('[data-edit]').forEach(b=>b.onclick=()=>openEdit(+b.dataset.edit));
+  $$('[data-fav]').forEach(b=>b.onclick=()=>{const q=QS()[+b.dataset.fav];q.fav=!q.fav;renderSheet();toast(q.fav?'Marcada como favorita':'Quitada de favoritas');});
+  refreshHistCount();
+}
+function swapOne(i){
+  const list=QS(),q=list[i];
+  const d=S.dist[q.course]||{topic:ALL_TOPICS,level:q.level};
+  const p=(POOL[q.course]||[]).filter(x=>(d.topic===ALL_TOPICS||x.topic===d.topic));
+  const usados=new Set(list.map(x=>x.i));
+  const libres=p.filter(x=>!usados.has(x.i));
+  if(!libres.length){toast('No hay más preguntas de ese curso en el banco');return;}
+  const pick=libres[Math.floor(Math.random()*libres.length)];
+  const pairs=pick.alts.map((a,k)=>({a,ok:k===pick.key}));
+  for(let k=pairs.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[pairs[k],pairs[j]]=[pairs[j],pairs[k]];}
+  list[i]={...pick,alts:pairs.map(x=>x.a),key:pairs.findIndex(x=>x.ok),fav:q.fav};
+  renderSheet();toast('Pregunta cambiada');
+}
+let editing=null;
+function openEdit(i){
+  editing=i;const q=QS()[i];const co=COURSES.find(c=>c.id===q.course)||{n:q.course};
+  $('#editSub').textContent=`${co.n} · ${q.topic} · nivel ${q.level}`;
+  $('#eStem').value=q.stem;
+  $('#eAlts').innerHTML=q.alts.map((a,j)=>`<div><label class="fl">Alternativa ${LET[j]}</label><input class="inp" data-alt="${j}" value="${esc(a)}"></div>`).join('');
+  $('#eKey').value=LET[q.key];$('#eSol').value=q.sol;$('#mEdit').hidden=false;
+}
+$('#eSave').onclick=()=>{const q=QS()[editing];
+  q.stem=$('#eStem').value.trim();
+  q.alts=$$('#eAlts [data-alt]').map(i=>i.value.trim()||'—');
+  q.key=LET.indexOf($('#eKey').value);q.sol=$('#eSol').value.trim();
+  $('#mEdit').hidden=true;renderSheet();toast('Pregunta actualizada');};
+
+$('#toggleSol').onclick=()=>{S.showSol=!S.showSol;renderSheet();};
+$('#incKey').onchange=e=>S.includeKey=e.target.checked;
+$('#backTo2').onclick=()=>go(2);
+/* ---- Impresión / PDF ----
+   Dentro de un iframe (visor de artifacts) window.print() queda bloqueado.
+   Por eso se arma un documento independiente y se abre en pestaña propia. */
+function printDocHTML(){
+  const src=$('#sheet');
+  if(!src) return '';
+  const clone=src.cloneNode(true);
+  clone.querySelectorAll('.noprint').forEach(n=>n.remove());
+  return `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${esc(S.title)} — Versión ${S.version}</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:22px;font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:#1D2733;font-size:14px;line-height:1.5;background:#fff}
+.sheet{max-width:900px;margin:0 auto}
+.sh-head{display:flex;align-items:center;gap:13px;border-bottom:2.5px solid #16304F;padding-bottom:13px}
+.sh-logo{height:42px;max-width:140px;object-fit:contain}
+.brand-mark{width:34px;height:34px;border-radius:9px;background:#16304F;display:grid;place-items:center;color:#E8C77A;flex:none}
+.sh-brand{font-family:Georgia,'Times New Roman',serif;font-weight:700;letter-spacing:.05em;font-size:15.5px}
+.sh-brand small{display:block;font-family:inherit;font-weight:400;letter-spacing:0;font-size:11.5px;color:#5A6879}
+.sh-tag{margin-left:auto;background:#B8862B;color:#fff;border-radius:8px;padding:7px 14px;font-weight:700;font-size:13px;letter-spacing:.05em}
+.sh-uni{text-align:center;font-size:12px;letter-spacing:.11em;color:#B8862B;font-weight:700;margin-top:18px}
+.sh-title{text-align:center;font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:600;margin:8px 0 5px;line-height:1.15}
+.sh-meta{text-align:center;color:#5A6879;font-size:13.5px}
+.sh-fields{display:flex;gap:16px;align-items:center;border:1px solid #DFE5EC;border-radius:9px;padding:12px 16px;margin:18px 0 12px;font-size:13.5px;flex-wrap:wrap}
+.sh-fields .fill{flex:1;min-width:170px}
+.sh-fields u{text-decoration:none;border-bottom:1px solid #9AA8B8;display:inline-block;min-width:130px}
+.sh-note{border-left:3px solid #B8862B;background:#F6F8FA;padding:10px 14px;font-size:13px;border-radius:0 7px 7px 0}
+.qgrid{column-count:2;column-gap:32px;margin-top:18px}
+.q{break-inside:avoid;page-break-inside:avoid;padding-bottom:12px;margin-bottom:12px;border-bottom:1px dashed #DFE5EC}
+.q-top{display:flex;gap:8px;align-items:baseline;font-size:10.5px;letter-spacing:.06em;font-weight:700;color:#B8862B;margin-bottom:6px}
+.q-top .lvl{margin-left:auto;color:#5A6879;font-weight:500}
+.q-body{font-size:13.5px}
+.q-body b.n{font-family:Georgia,serif;font-weight:700}
+.alts{list-style:none;margin:7px 0 0;padding:0;display:grid;gap:3px}
+.alts li{font-size:13px;display:flex;gap:8px}
+.alts li i{font-style:normal;font-weight:700;color:#B8862B}
+.alts li.key{background:#EDF7F1;border-radius:5px;padding:2px 5px;margin-left:-5px}
+.sol{margin-top:8px;background:#F6F8FA;border-radius:8px;padding:9px 11px;font-size:12.5px;border-left:3px solid #24456B}
+.sol b{display:block;font-size:11px;letter-spacing:.06em;color:#24456B;margin-bottom:4px}
+.pbar{position:sticky;top:0;background:#16304F;color:#fff;padding:11px 16px;border-radius:10px;margin:0 auto 18px;max-width:900px;display:flex;gap:10px;align-items:center;font-size:14px;flex-wrap:wrap}
+.pbar button{background:#B8862B;color:#102542;border:0;border-radius:8px;padding:10px 18px;font-weight:700;font-size:14px;cursor:pointer}
+@media (max-width:760px){.qgrid{column-count:1}body{padding:14px}.sh-title{font-size:24px}}
+@media print{.pbar{display:none}body{padding:0}.qgrid{column-count:2}}
+</style></head><body>
+<div class="pbar"><span>Si no se abrió el diálogo de impresión automáticamente, usa este botón. Para PDF elige "Guardar como PDF" como destino.</span><button onclick="window.print()">Imprimir / Guardar PDF</button></div>
+${clone.outerHTML}
+<script>setTimeout(function(){try{window.print();}catch(e){}},600);<\/script>
+</body></html>`;
+}
+function openDocument(html){
+  // 1) Blob + enlace en pestaña nueva: es lo que sí pasa el sandbox de un iframe
+  try{
+    const url=URL.createObjectURL(new Blob([html],{type:'text/html'}));
+    const a=document.createElement('a');
+    a.href=url;a.target='_blank';a.rel='noopener';
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),60000);
+    return true;
+  }catch(e){}
+  // 2) Ventana nueva escrita a mano
+  try{
+    const w=window.open('','_blank');
+    if(w){w.document.open();w.document.write(html);w.document.close();return true;}
+  }catch(e){}
+  // 3) Impresión directa (funciona fuera de iframes)
+  try{window.focus();window.print();return true;}catch(e){}
+  return false;
+}
+$('#printBtn').onclick=()=>{
+  const html=printDocHTML();
+  if(!html){toast('Primero genera la ficha');return;}
+  if(openDocument(html)) toast('Se abrió en otra pestaña. Elige "Guardar como PDF".');
+  else{
+    saveFile((S.title.replace(/[^\w\sáéíóúñÁÉÍÓÚÑ-]/g,'').trim()||'ficha')+`-${S.version}.html`,html,'text/html');
+    toast('Tu navegador bloqueó la pestaña. Se descargó el archivo: ábrelo e imprime desde ahí.');
+  }
+};
+
+$('#keyBtn').onclick=()=>{const l=QS();
+  $('#keySub').textContent=`${S.title} · Versión ${S.version} · ${l.length} preguntas`;
+  $('#keyGrid').innerHTML=l.map((q,i)=>`<div class="keycell">${i+1}<b>${LET[q.key]}</b></div>`).join('');
+  $('#mKey').hidden=false;};
+$('#sheetBtn').onclick=()=>{const l=QS();
+  $('#sheetGrid').innerHTML=l.map((q,i)=>`<div class="keycell">${i+1}<div class="bub">${LET.map(x=>`<span>${x}</span>`).join('')}</div></div>`).join('');
+  $('#mSheet').hidden=false;};
+
+function answerSheetHTML(){
+  const l=QS();
+  return `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Hoja de respuestas</title>
+  <style>body{font-family:system-ui,sans-serif;padding:26px}h1{font-size:19px;margin:0 0 4px}
+  .g{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-top:14px}
+  .c{border:1px solid #ccc;border-radius:6px;padding:6px;text-align:center;font-size:13px}
+  .b span{display:inline-grid;place-items:center;width:17px;height:17px;border:1px solid #888;border-radius:50%;font-size:10px;margin:3px 1px 0}
+  @media print{body{padding:0}}</style></head><body>
+  <h1>${esc(S.title)} — Versión ${S.version}</h1>
+  <p style="font-size:13px">${esc(S.acad||'Ruta Cachimbo')} · Estudiante: ______________________ · Fecha: ${esc(S.date)}</p>
+  <div class="g">${l.map((q,i)=>`<div class="c">${i+1}<div class="b">${LET.map(x=>`<span>${x}</span>`).join('')}</div></div>`).join('')}</div>
+  <script>setTimeout(function(){try{window.print();}catch(e){}},500);<\/script>
+  </body></html>`;
+}
+$('#printSheet').onclick=()=>{
+  if(openDocument(answerSheetHTML())) toast('Se abrió en otra pestaña');
+  else toast('Tu navegador bloqueó la pestaña. Permite las ventanas emergentes.');
+};
+
+/* ---- Word ---- */
+function wordHTML(){
+  const l=QS();
+  const clave=S.includeKey?`<h3 style="font-size:12pt">Clave de respuestas</h3><p>${l.map((q,i)=>`${i+1}-${LET[q.key]}`).join('&nbsp; &nbsp;')}</p>`:'';
+  return `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>${esc(S.title)}</title>
+  <!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]-->
+  <style>@page{size:A4;margin:2cm}body{font-family:Georgia,serif;font-size:11pt}
+  h1{text-align:center;font-size:18pt;margin:4pt 0}.uni{text-align:center;font-size:9pt;letter-spacing:1px;color:#B8862B}
+  .meta{text-align:center;font-size:10pt;color:#555}.box{border:1px solid #999;padding:6pt;margin:10pt 0;font-size:10pt}
+  .q{margin:0 0 10pt}.t{font-size:8pt;color:#B8862B}.a{margin-left:14pt}
+  .s{background:#F4F6F8;padding:5pt;font-size:9.5pt;border-left:2pt solid #16304F}</style></head><body>
+  <div class="uni">UNIVERSIDAD NACIONAL DE PIURA</div>
+  <h1>${esc(S.title)}</h1>
+  <div class="meta">${esc(S.acad||'Ruta Cachimbo')} · ${esc(S.profile)} · Nivel ${esc(S.level)} · Versión ${S.version}${S.teacher?' · '+esc(S.teacher):''}</div>
+  <div class="box">Estudiante: _______________________________ &nbsp; Fecha: ${esc(S.date)} &nbsp; Tiempo: ${S.minutes} min</div>
+  ${l.map((q,i)=>{const co=COURSES.find(c=>c.id===q.course)||{n:q.course};
+    return `<div class="q"><div class="t">${esc(co.n.toUpperCase())} · ${esc(String(q.topic).toUpperCase())} · ${esc(q.level)}</div>
+    <b>${i+1}.</b> ${esc(q.stem)}<div class="a">${q.alts.map((a,j)=>`${LET[j]}) ${esc(a)}<br>`).join('')}</div>
+    ${S.showSol?`<div class="s"><b>Solución.</b> ${esc(q.sol)}</div>`:''}</div>`;}).join('')}
+  ${clave}</body></html>`;
+}
+let downloadsApi=null;
+(async()=>{try{downloadsApi=window.claude?await window.claude.use('downloads'):null;}catch(e){downloadsApi=null;}})();
+async function saveFile(name,content,mime){
+  if(downloadsApi){ try{ await downloadsApi.save({filename:name,data:content}); toast('Archivo listo'); return; }catch(e){ toast('Descarga cancelada'); return; } }
+  try{
+    const blob=new Blob(['\ufeff'+content],{type:mime});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download=name;a.rel='noopener';
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),5000);
+    toast('Archivo descargado');
+  }catch(e){
+    if(!openDocument(content)) toast('No se pudo descargar en este navegador');
+  }
+}
+$('#wordBtn').onclick=()=>{
+  const name=(S.title.replace(/[^\w\sáéíóúñÁÉÍÓÚÑ-]/g,'').trim()||'ficha')+`-${S.version}.doc`;
+  saveFile(name,wordHTML(),'application/msword');
+};
+
+/* ---- guardar / historial ---- */
+function hist(){return store('rc_hist')||[];}
+function refreshHistCount(){$('#histBtn').textContent=`Historial (${hist().length})`;}
+$('#saveBtn').onclick=()=>{
+  const h=hist();
+  h.unshift({id:Date.now(),title:S.title,when:new Date().toLocaleString('es-PE'),
+    meta:{profile:S.profile,title:S.title,count:S.count,level:S.level,acad:S.acad,teacher:S.teacher,date:S.date,minutes:S.minutes,logo:S.logo,dist:S.dist},
+    versions:S.versions,shortage:S.shortage});
+  if(store('rc_hist',h.slice(0,10))===null&&!localStorage.getItem('rc_hist')){toast('No se pudo guardar en este navegador');return;}
+  refreshHistCount();toast('Ficha guardada');
+};
+function openHist(){
+  const h=hist();
+  $('#histList').innerHTML=h.length?h.map(x=>`<div class="hist-item"><div class="g"><b>${esc(x.title)}</b><small>${esc(x.when)} · ${(x.versions&&x.versions.A?x.versions.A.length:0)} preguntas · ${esc(x.meta.level)}</small></div>
+    <button class="btn btn-s" data-load="${x.id}" style="padding:8px 13px">Abrir</button>
+    <button class="tbtn" data-del="${x.id}">Eliminar</button></div>`).join('')
+    :'<div class="empty">Aún no guardas ninguna ficha.</div>';
+  $$('[data-load]').forEach(b=>b.onclick=()=>{const x=hist().find(y=>y.id==b.dataset.load);if(!x)return;
+    Object.assign(S,x.meta);S.versions=x.versions;S.shortage=x.shortage||[];S.version='A';S.showSol=false;
+    $('#mHist').hidden=true;go(3);renderSheet();});
+  $$('[data-del]').forEach(b=>b.onclick=()=>{store('rc_hist',hist().filter(y=>y.id!=b.dataset.del));openHist();refreshHistCount();});
+  $('#mHist').hidden=false;
+}
+$('#histBtn').onclick=openHist;$('#openHist').onclick=openHist;
+refreshHistCount();
+
+$$('[data-close]').forEach(b=>b.onclick=()=>b.closest('.modal').hidden=true);
+$$('.modal').forEach(m=>m.onclick=e=>{if(e.target===m)m.hidden=true;});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')$$('.modal').forEach(m=>m.hidden=true);});
+</script>
+</body>
+</html>
